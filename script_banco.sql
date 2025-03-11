@@ -136,6 +136,8 @@ INSERT INTO cliente_endereco (id_cliente, id_endereco) VALUES
 (2, 2),
 (3, 3);
 
+
+-- Visualizar todas as tabelas
 select * from cliente;
 select * from endereco;
 select * from carrinho;
@@ -144,5 +146,6 @@ select * from produto;
 select * from pedido;
 select * from item_produto;
 select * from cliente_endereco;
+
 
 
