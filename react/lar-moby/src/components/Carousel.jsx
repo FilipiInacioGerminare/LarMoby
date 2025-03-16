@@ -70,20 +70,19 @@ function Carrossel() {
   };
 
   return (
-    <section className="py-16 bg-gray-50 text-center h-[90vh]">
-      <h2 className="text-3xl font-semibold text-gray-800 mb-12">
+    <section className="py-12 md:py-16 bg-gray-50 text-center">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-800 mb-8 md:mb-12 font-amaranth">
         Explore nossos móveis por ambiente
       </h2>
-      <div className="relative w-full max-w-5xl mx-auto ">
-        {" "}
-        {/* Aumentei o padding para dar espaço às setas */}
+      <div className="relative w-full max-w-6xl mx-auto px-2 sm:px-4 md:px-6">
         <div className="flex items-center justify-between">
+          {/* Botão de seta esquerda - escondido em mobile */}
           <button
             onClick={scrollLeftHandler}
-            className="flex items-center justify-center w-12 h-12 bg-white text-gray-800 rounded-full shadow-lg hover:bg-yellow-400 hover:text-white transition-all duration-300 transform hover:scale-105 -ml-16" // Movido para fora com -ml-16
+            className="hidden sm:flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-white text-gray-800 rounded-full shadow-lg hover:bg-yellow-400 hover:text-white transition-all duration-300 transform hover:scale-110 -ml-4 sm:-ml-6 md:-ml-8 z-10"
           >
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5 md:w-6 md:h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -97,32 +96,42 @@ function Carrossel() {
             </svg>
           </button>
 
+          {/* Carrossel */}
           <div
             ref={carouselRef}
-            className="flex space-x-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory w-full"
+            className="flex space-x-4 sm:space-x-6 overflow-x-auto scrollbar-hide snap-x snap-mandatory w-full mx-auto"
             style={{ scrollBehavior: "smooth" }}
           >
             {images.map((image, index) => (
-              <div key={index} className="snap-center shrink-0 ">
+              <div
+                key={index}
+                className="rounded-xl snap-center shrink-0 relative group overflow-hidden"
+              >
                 <img
                   src={image.src}
                   alt={image.alt}
-                  className="w-80 h-auto rounded-lg shadow-lg object-cover"
+                  className="w-56 sm:w-64 md:w-80 h-auto rounded-xl shadow-xl object-cover transition-transform group-hover:scale-105"
                 />
+                {/* Overlay com o texto da categoria */}
+                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <p className="text-white text-base sm:text-lg md:text-xl font-semibold font-albert">
+                    {image.alt}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
 
-          {/* Botão de seta direita */}
+          {/* Botão de seta direita - escondido em mobile */}
           <button
             onClick={scrollRightHandler}
-            className="flex items-center justify-center w-12 h-12 bg-white text-gray-800 rounded-full shadow-lg hover:bg-yellow-400 hover:text-white transition-all duration-300 transform hover:scale-105 -mr-16" // Movido para fora com -mr-16
+            className="hidden sm:flex items-center justify-center w-10 h-10 md:w-12 md:h-12 bg-white text-gray-800 rounded-full shadow-lg hover:bg-yellow-400 hover:text-white transition-all duration-300 transform hover:scale-110 -mr-4 sm:-mr-6 md:-mr-8 z-10"
           >
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5 md:w-6 md:h-6"
               fill="none"
               stroke="currentColor"
-              viewBox="0 24"
+              viewBox="0 0 24 24"
             >
               <path
                 strokeLinecap="round"
@@ -134,7 +143,7 @@ function Carrossel() {
           </button>
         </div>
       </div>
-      <button className="mt-8 px-6 py-3 bg-yellow-400 text-white font-medium rounded-full shadow-md hover:bg-yellow-500 transition">
+      <button className="mt-6 sm:mt-8 px-4 sm:px-6 py-2 sm:py-3 bg-yellow-400 text-white font-medium rounded-full shadow-md hover:bg-yellow-500 transition transform hover:scale-105 font-albert">
         Ou explore todos os nossos produtos
       </button>
     </section>
