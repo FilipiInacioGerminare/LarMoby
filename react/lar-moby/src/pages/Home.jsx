@@ -1,6 +1,8 @@
 import HeroSection from "../components/HeroSection";
 import Carousel from "../components/Carousel";
 import Image from "../assets/imagem_sobre.png";
+import Footer from "../components/Footer";
+
 
 function Home() {
   return (
@@ -41,6 +43,7 @@ function Home() {
           />
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

@@ -1,14 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { CartContext } from "../components/CartContext";
 import Filtro from "../assets/Slider.png";
+import Image from "../assets/sala_estar.png"; // Certifique-se de que o caminho está correto
 
 function Produtos() {
+  const { addToCart } = useContext(CartContext);
   const [showFilters, setShowFilters] = useState(false);
 
   const products = Array(8).fill({
     id: 1,
-    image: "https://via.placeholder.com/200",
-    name: "hack para sala de madeira lisa e tratada",
-    price: "R$ 1499,90",
+    image: Image, // Corrigido: use a variável diretamente
+    name: "Rack para sala de madeira lisa e tratada",
+    price: 1499.9,
     discount: "ou 3x de 359,99",
     shipping: "opção de frete grátis disponível",
   });
@@ -19,7 +22,7 @@ function Produtos() {
         <button onClick={() => setShowFilters(true)} className="text-xl p-10">
           <img src={Filtro} alt="Filtrar" />
         </button>
-        <h1 className="text-2xl font-bold ">Produtos</h1>
+        <h1 className="text-2xl font-bold">Produtos</h1>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -29,19 +32,25 @@ function Produtos() {
             className="bg-white rounded-lg shadow-md overflow-hidden"
           >
             <img
-              src={product.image}
+              src={product.image} // Agora product.image contém o valor correto
               alt={product.name}
               className="w-full h-48 object-cover"
             />
             <div className="p-4">
               <p className="text-sm text-gray-700 mb-2">{product.name}</p>
               <p className="text-lg font-bold text-gray-900 mb-1">
-                {product.price} no pix
+                R${product.price.toFixed(2)} no pix
               </p>
               <p className="text-sm text-gray-600 mb-1">{product.discount}</p>
               <p className="text-xs font-bold text-green-600">
                 {product.shipping}
               </p>
+              <button
+                onClick={() => addToCart(product)}
+                className="mt-2 bg-purple-600 text-white px-4 py-2 rounded"
+              >
+                Adicionar ao Carrinho
+              </button>
             </div>
           </div>
         ))}
