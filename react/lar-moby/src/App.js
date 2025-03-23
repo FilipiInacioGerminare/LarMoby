@@ -6,7 +6,9 @@ import Produtos from "./pages/Produtos";
 import Navbar from "./components/Navbar";
 import Carrinho from "./pages/Carrinho";
 import { CartProvider } from "./components/CartContext";
-import Login from "./pages/Login"
+import Login from "./pages/Login";
+import Registrar from "./pages/Registrar";
+import Buscar from "./pages/Search";
 
 function App() {
   return (
@@ -17,7 +19,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/produtos" element={<Produtos />} />
           <Route path="/carrinho" element={<Carrinho />} />
-          <Route path="/perfil" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registrar" element={<Registrar />} />
+          <Route path="/busca" element={<Buscar />} />
         </Routes>
       </Router>
     </CartProvider>

@@ -34,7 +34,7 @@ function Navbar() {
             <Link to="/carrinho">
               <FaShoppingCart className="text-xl md:text-2xl" />
             </Link>
-            <Link to="/perfil">
+            <Link to="/login">
               <FaUser className="text-xl md:text-2xl" />
             </Link>
           </div>

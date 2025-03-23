@@ -15,7 +15,7 @@ function Carrinho() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-full container mx-auto px-4 py-6 text-center">
+      <div className="min-h-screen-full container flex mx-auto px-4 py-6 text-center justify-center">
         <div className="flex flex-col items-center">
           <svg
             className="w-12 h-12 text-gray-500 mb-4"

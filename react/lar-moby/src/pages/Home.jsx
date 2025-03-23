@@ -3,7 +3,6 @@ import Carousel from "../components/Carousel";
 import Image from "../assets/imagem_sobre.png";
 import Footer from "../components/Footer";
 
-
 function Home() {
   return (
     <div className="bg-[#FDFBF6] text-gray-800">
