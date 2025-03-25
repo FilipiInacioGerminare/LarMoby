@@ -9,6 +9,7 @@ import { CartProvider } from "./components/CartContext";
 import Login from "./pages/Login";
 import Registrar from "./pages/Registrar";
 import Buscar from "./pages/Search";
+import Perfil from "./pages/Perfil";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/registrar" element={<Registrar />} />
           <Route path="/busca" element={<Buscar />} />
+          <Route path="/perfil" element={<Perfil />} />
         </Routes>
       </Router>
     </CartProvider>

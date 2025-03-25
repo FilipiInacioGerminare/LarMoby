@@ -60,7 +60,7 @@ function Login() {
                 placeholder="!exemplo123"
               />
               <a
-                href="#"
+                href="#esqueceu_senha"
                 className="text-sm text-yellow-500 hover:underline mt-2 block text-right"
               >
                 Esqueci minha senha
@@ -92,7 +92,7 @@ function Login() {
               onClick={() => setShowRegister(true)}
               className="text-yellow-500 hover:underline"
             >
-              Criar conta Centauro
+              Criar conta LarMoby
             </button>
           </div>
 
@@ -112,7 +112,7 @@ function Login() {
           </button>
 
           <div className="text-center mt-4">
-            <a href="#" className="text-sm text-gray-500 hover:underline">
+            <a href="#ajuda" className="text-sm text-gray-500 hover:underline">
               Preciso de ajuda?
             </a>
           </div>
