@@ -1,4 +1,5 @@
 import heroImage from "../assets/image_home.svg";
+import { Link } from "react-router-dom";
 
 function HeroSection() {
   return (
@@ -20,9 +21,12 @@ function HeroSection() {
             🏠 3600+ móveis incríveis para sua casa <br />
             🛍️ 100+ Lojas espalhadas pelo Brasil
           </p>
-          <button className="mt-6 px-6 py-3 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition w-full md:w-auto">
-            Explore a nossa coleção!
-          </button>
+          <Link
+            to="/produtos"
+            className="mt-6 px-6 py-3 bg-yellow-500 text-white text-center font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition w-full md:w-auto"
+          >
+            <button>Explore a nossa coleção!</button>
+          </Link>
         </div>
       </div>
     </section>
