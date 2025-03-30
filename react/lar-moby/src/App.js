@@ -1,20 +1,32 @@
+// src/App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Produtos from "./pages/Produtos";
 import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
+import Carrinho from "./pages/Carrinho";
+import { CartProvider } from "./components/CartContext";
+import Login from "./pages/Login";
+import Registrar from "./pages/Registrar";
+import Buscar from "./pages/Search";
+import Perfil from "./pages/Perfil";
 
 function App() {
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/produtos" element={<Produtos />} />
-      </Routes>
-      <Footer />
-    </Router>
+    <CartProvider>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/produtos" element={<Produtos />} />
+          <Route path="/carrinho" element={<Carrinho />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registrar" element={<Registrar />} />
+          <Route path="/busca" element={<Buscar />} />
+          <Route path="/perfil" element={<Perfil />} />
+        </Routes>
+      </Router>
+    </CartProvider>
   );
 }
 

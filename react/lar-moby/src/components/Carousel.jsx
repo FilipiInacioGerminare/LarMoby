@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 import Sala_estar from "../assets/sala_estar.png";
 import Quarto from "../assets/quarto.png";
 import Cozinha from "../assets/cozinha.png";
@@ -15,6 +16,7 @@ const images = [
 ];
 
 function Carrossel() {
+  const navigate = useNavigate(); // Initialize useNavigate
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
@@ -69,6 +71,11 @@ function Carrossel() {
     }
   };
 
+  // Handle image click to navigate to /busca with the category
+  const handleImageClick = (category) => {
+    navigate("/busca", { state: { searchTerm: category } });
+  };
+
   return (
     <section className="py-12 md:py-16 bg-gray-50 text-center">
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-800 mb-8 md:mb-12 font-amaranth">
@@ -105,7 +112,8 @@ function Carrossel() {
             {images.map((image, index) => (
               <div
                 key={index}
-                className="rounded-xl snap-center shrink-0 relative group overflow-hidden"
+                className="rounded-xl snap-center shrink-0 relative group overflow-hidden cursor-pointer"
+                onClick={() => handleImageClick(image.alt)} // Add click handler
               >
                 <img
                   src={image.src}
