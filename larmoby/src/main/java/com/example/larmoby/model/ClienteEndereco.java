@@ -3,7 +3,7 @@ package com.example.larmoby.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "cliente_endereco")
+@Table
 public class ClienteEndereco {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
