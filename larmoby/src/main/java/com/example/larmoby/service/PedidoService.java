@@ -2,7 +2,6 @@ package com.example.larmoby.service;
 
 import com.example.larmoby.model.*;
 import com.example.larmoby.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
@@ -12,23 +11,26 @@ import java.util.Optional;
 @Service
 public class PedidoService {
 
-    @Autowired
-    private PedidoRepository pedidoRepository;
+    private final PedidoRepository pedidoRepository;
 
-    @Autowired
-    private CarrinhoRepository carrinhoRepository;
+    private final CarrinhoRepository carrinhoRepository;
 
-    @Autowired
-    private ItemCarrinhoRepository itemCarrinhoRepository;
+    private final ItemCarrinhoRepository itemCarrinhoRepository;
 
-    @Autowired
-    private ItemPedidoRepository itemPedidoRepository;
+    private final ItemPedidoRepository itemPedidoRepository;
 
-    @Autowired
-    private ProdutoRepository produtoRepository;
+    private final ProdutoRepository produtoRepository;
+
+    public PedidoService(PedidoRepository pedidoRepository, CarrinhoRepository carrinhoRepository, ItemCarrinhoRepository itemCarrinhoRepository, ItemPedidoRepository itemPedidoRepository, ProdutoRepository produtoRepository) {
+        this.pedidoRepository = pedidoRepository;
+        this.carrinhoRepository = carrinhoRepository;
+        this.itemCarrinhoRepository = itemCarrinhoRepository;
+        this.itemPedidoRepository = itemPedidoRepository;
+        this.produtoRepository = produtoRepository;
+    }
 
     @Transactional
-    public Pedido criarPedido(int idCliente) {
+    public void criarPedido(int idCliente) {
         Optional<Carrinho> carrinhoOptional = carrinhoRepository.findCarrinhoById_cliente(idCliente);
         if (carrinhoOptional.isEmpty()) {
             throw new RuntimeException("Carrinho não encontrado para o cliente.");
@@ -73,7 +75,26 @@ public class PedidoService {
         pedidoRepository.save(pedido);
 
         itemCarrinhoRepository.deleteItemCarrinhoByIdCarrinho(carrinho.getId_carrinho());
+    }
 
-        return pedido;
+    @Transactional
+    public void cancelarPedido(int idPedido) {
+        Pedido pedido = pedidoRepository.findPedidoById_pedido(idPedido);
+        List<ItemPedido> itemPedidos = itemPedidoRepository.findItemPedidoById_pedido(idPedido);
+        for (ItemPedido item : itemPedidos) {
+            Produto produto = produtoRepository.findProdutoById_produto(item.getId_produto());
+            produto.setQnt_estoque(produto.getQnt_estoque() + item.getQuantidade());
+            produtoRepository.save(produto);
+        }
+        itemPedidoRepository.deleteItemPedidoById_pedido(idPedido);
+        pedidoRepository.delete(pedido);
+    }
+
+    public List<Pedido> buscarPedidoPorCliente(int idCliente) {
+        return pedidoRepository.findPedidoById_cliente(idCliente);
+    }
+
+    public List<Pedido> getPedidos() {
+        return pedidoRepository.findAll();
     }
 }

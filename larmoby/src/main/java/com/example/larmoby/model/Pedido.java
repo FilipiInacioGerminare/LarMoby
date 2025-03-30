@@ -10,15 +10,7 @@ import java.util.Date;
 @Table
 public class Pedido {
     @Id
-    @SequenceGenerator(
-            name = "cliente_sequence",
-            sequenceName = "cliente_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "cliente_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_pedido;
     private int id_cliente;
     private LocalDate data_pedido;

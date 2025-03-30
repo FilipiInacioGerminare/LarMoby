@@ -6,15 +6,8 @@ import jakarta.persistence.*;
 @Table(name = "item_pedido")
 public class ItemPedido {
     @Id
-    @SequenceGenerator(
-            name = "cliente_sequence",
-            sequenceName = "cliente_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "cliente_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private int id_item_pedido;
     private int id_pedido;
     private int id_produto;

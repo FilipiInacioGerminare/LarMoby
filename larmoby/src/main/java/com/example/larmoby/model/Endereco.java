@@ -6,15 +6,8 @@ import jakarta.persistence.*;
 @Table
 public class Endereco {
     @Id
-    @SequenceGenerator(
-            name = "cliente_sequence",
-            sequenceName = "cliente_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "cliente_sequence"
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private int id_endereco;
     private String cep;
     private String numero;
