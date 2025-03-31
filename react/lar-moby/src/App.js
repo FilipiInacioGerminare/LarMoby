@@ -1,32 +1,83 @@
-// src/App.js
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { CartProvider } from "./components/CartContext";
 import Home from "./pages/Home";
 import Produtos from "./pages/Produtos";
-import Navbar from "./components/Navbar";
 import Carrinho from "./pages/Carrinho";
-import { CartProvider } from "./components/CartContext";
 import Login from "./pages/Login";
-import Registrar from "./pages/Registrar";
 import Buscar from "./pages/Search";
 import Perfil from "./pages/Perfil";
+import Navbar from "./components/Navbar";
+
+// Componente de layout para páginas com Navbar
+const LayoutWithNavbar = ({ children }) => (
+  <>
+    <Navbar />
+    {children}
+  </>
+);
 
 function App() {
   return (
-    <CartProvider>
-      <Router>
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/produtos" element={<Produtos />} />
-          <Route path="/carrinho" element={<Carrinho />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/registrar" element={<Registrar />} />
-          <Route path="/busca" element={<Buscar />} />
-          <Route path="/perfil" element={<Perfil />} />
-        </Routes>
-      </Router>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <Router>
+          <Routes>
+            {/* Página de Login sem Navbar */}
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+
+            {/* Páginas com Navbar */}
+            <Route
+              path="/home"
+              element={
+                <LayoutWithNavbar>
+                  <Home />
+                </LayoutWithNavbar>
+              }
+            />
+            <Route
+              path="/produtos"
+              element={
+                <LayoutWithNavbar>
+                  <Produtos />
+                </LayoutWithNavbar>
+              }
+            />
+            <Route
+              path="/busca"
+              element={
+                <LayoutWithNavbar>
+                  <Buscar />
+                </LayoutWithNavbar>
+              }
+            />
+            <Route
+              path="/carrinho"
+              element={
+                <ProtectedRoute>
+                  <LayoutWithNavbar>
+                    <Carrinho />
+                  </LayoutWithNavbar>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/perfil"
+              element={
+                <ProtectedRoute>
+                  <LayoutWithNavbar>
+                    <Perfil />
+                  </LayoutWithNavbar>
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 

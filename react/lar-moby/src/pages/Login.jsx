@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Registrar from "./Registrar";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext"; // Importa o useAuth
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -8,16 +10,49 @@ function Login() {
   const [loginMessage, setLoginMessage] = useState("");
   const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth(); // Pega a função login do contexto
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email === "inacio@gmail.com" && password === "12344321!i") {
-        setLoginMessage('Login realizado com sucesso!');
-        // Redireciona para a rota raiz após 1 segundo
-        setTimeout(() => {
-          navigate('/');
-        }, 1000);    } else {
-      setLoginMessage("Email ou senha incorretos!");
+    const loginData = { email, senha: password };
+    console.log("Enviando requisição com:", JSON.stringify(loginData, null, 2));
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/clientes/login",
+        loginData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Resposta do backend:", response.data);
+      const cliente = response.data;
+      login(cliente); // Atualiza o estado global com o cliente
+      setLoginMessage("Login realizado com sucesso!");
+      setTimeout(() => {
+        navigate("/produtos");
+      }, 1000);
+    } catch (error) {
+      console.error("Erro completo:", error);
+      if (error.response) {
+        console.log(
+          "Resposta do erro:",
+          error.response.data,
+          error.response.status
+        );
+        if (error.response.status === 401) {
+          setLoginMessage("Email ou senha incorretos!");
+        } else {
+          setLoginMessage(`Erro no servidor: ${error.response.status}`);
+        }
+      } else if (error.request) {
+        setLoginMessage("Não foi possível conectar ao servidor!");
+        console.error("Nenhuma resposta recebida:", error.request);
+      } else {
+        setLoginMessage("Erro ao processar login!");
+        console.error("Erro na requisição:", error.message);
+      }
     }
   };
 
@@ -42,11 +77,12 @@ function Login() {
                 Informe o E-mail
               </label>
               <input
-                type="text"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 placeholder="email@gmail.com"
+                required
               />
             </div>
 
@@ -58,6 +94,7 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 placeholder="!exemplo123"
+                required
               />
               <a
                 href="#esqueceu_senha"
