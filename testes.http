@@ -9,7 +9,8 @@
 
 # POST http://localhost:8080/carrinhos/limparcarrinho?idCarrinho=1
 
-# POST http://localhost:8080/carrinhos/criar?idCliente=2
+POST http://localhost:8080/carrinhos/criar/8
+
 
 
 
@@ -25,14 +26,14 @@
 
 # Teste do cliente
 
-# GET http://localhost:8080/clientes
+#  GET http://localhost:8080/clientes
 
 # POST http://localhost:8080/clientes/criarcliente
 # Content-Type: application/json
 
 # {
 #   "nome": "Duda",
-#   "email": "duda@gmail.com",
+#   "email": "testeeee@gmail.com",
 #   "senha": "12344321!i",
 #   "telefone": "123456789",
 #   "data_cadastro": "2025-03-30",
@@ -48,7 +49,7 @@
 
   #GET http://localhost:8080/produtos
 
-  GET http://localhost:8080/produtos/1
+  # GET http://localhost:8080/produtos/1
 
 # POST http://localhost:8080/produtos/inserir
 # Content-Type: application/json

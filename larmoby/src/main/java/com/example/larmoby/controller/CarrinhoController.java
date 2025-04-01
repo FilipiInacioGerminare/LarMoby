@@ -49,6 +49,7 @@ package com.example.larmoby.controller;
 
 import com.example.larmoby.model.ItemCarrinho;
 import com.example.larmoby.service.CarrinhoService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -67,6 +68,16 @@ public class CarrinhoController {
     @GetMapping
     public ResponseEntity<List<ItemCarrinho>> getItemCarrinho() {
         return ResponseEntity.ok(carrinhoService.getCarrinho());
+    }
+
+    @PostMapping("/criar/{idCliente}")
+    public ResponseEntity<String> criarCarrinho(@PathVariable int idCliente) {
+        try {
+            carrinhoService.criarCarrinho(idCliente);
+            return ResponseEntity.ok("Carrinho criado com sucesso!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar carrinho: " + e.getMessage());
+        }
     }
 
     @PostMapping("/adicionarproduto")
