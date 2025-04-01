@@ -33,31 +33,20 @@ function Produtos({ searchCategory = "" }) {
     }
 
     try {
-      const carrinhoResponse = await axios.post(
-        "http://localhost:8080/carrinhos/criar",
-        null,
-        { params: { idCliente } }
-      );
-      if (!carrinhoResponse.data.id_carrinho) {
-        throw new Error("Falha ao criar carrinho");
-      }
-      const idCarrinho = carrinhoResponse.data.id_carrinho;
-
       await axios.post(
-        "http://localhost:8080/carrinhos/adicionarproduto",
+        `http://localhost:8080/carrinhos/adicionarproduto`,
         null,
         {
           params: {
-            idCarrinho,
+            idCarrinho: idCliente,
             idProduto: product.id_produto,
-            quantidade: 1,
           },
         }
       );
       alert("Produto adicionado ao carrinho com sucesso!");
     } catch (error) {
       console.error("Erro ao adicionar ao carrinho:", error);
-      alert("Erro ao adicionar ao carrinho: " + error.message);
+      alert("Erro ao adicionar ao carrinho.");
     }
   };
 

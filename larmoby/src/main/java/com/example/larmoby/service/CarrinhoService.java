@@ -8,6 +8,7 @@ import com.example.larmoby.repository.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,22 +38,24 @@ public class CarrinhoService {
         return carrinhoRepository.save(novoCarrinho);
     }
 
-
     @Transactional
-    public boolean adicionarProduto(int idCarrinho, int idProduto) {
-        Carrinho carrinho = carrinhoRepository.findCarrinhoById_carrinho(idCarrinho);
+    public void adicionarProduto(int idCarrinho, int idProduto) {
+        // Verificar se produto existe
         Produto produto = produtoRepository.findProdutoById_produto(idProduto);
-
-        if (produto == null || carrinho == null) {
-            throw new RuntimeException("Carrinho ou produto não encontrado.");
+        if (produto == null) {
+            throw new RuntimeException("Produto não encontrado");
         }
 
-        ItemCarrinho itemCarrinho = itemCarrinhoRepository.findItemCarrinhoById_carrinhoAndId_produto(idCarrinho, idProduto);
+        // Buscar ou criar item no carrinho
+        ItemCarrinho itemCarrinho = itemCarrinhoRepository
+                .findItemCarrinhoById_carrinhoAndId_produto(idCarrinho, idProduto);
 
         if (itemCarrinho != null) {
+            // Atualizar quantidade e subtotal
             itemCarrinho.setQuantidade(itemCarrinho.getQuantidade() + 1);
             itemCarrinho.setSubtotal(itemCarrinho.getQuantidade() * produto.getPreco());
         } else {
+            // Criar novo item
             itemCarrinho = new ItemCarrinho();
             itemCarrinho.setId_carrinho(idCarrinho);
             itemCarrinho.setId_produto(idProduto);
@@ -61,9 +64,7 @@ public class CarrinhoService {
         }
 
         itemCarrinhoRepository.save(itemCarrinho);
-        return true;
     }
-
 
     @Transactional
     public boolean removerProduto(int idCarrinho, int idProduto) {
@@ -99,5 +100,16 @@ public class CarrinhoService {
     @Transactional
     public void limparCarrinho(int idCarrinho) {
         itemCarrinhoRepository.deleteItemCarrinhoByIdCarrinho(idCarrinho);
+    }
+
+    public List<ItemCarrinho> getCarrinhoByCliente(int idCliente) {
+        // Buscar ou criar carrinho para o cliente
+        Carrinho carrinho = carrinhoRepository.findCarrinhoById_cliente(idCliente)
+                .orElseGet(() -> {
+                    Carrinho novoCarrinho = new Carrinho(idCliente);
+                    return carrinhoRepository.save(novoCarrinho);
+                });
+
+        return itemCarrinhoRepository.findItemCarrinhoById_carrinho(carrinho.getId_carrinho());
     }
 }

@@ -1,50 +1,3 @@
-//package com.example.larmoby.controller;
-//
-//import com.example.larmoby.model.ItemCarrinho;
-//import com.example.larmoby.model.Pedido;
-//import com.example.larmoby.service.CarrinhoService;
-//import com.example.larmoby.service.PedidoService;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.web.bind.annotation.*;
-//
-//import java.util.List;
-//
-//@RestController
-//@RequestMapping("/carrinhos")
-//
-//public class CarrinhoController {
-//    private final CarrinhoService carrinhoService;
-//    @Autowired
-//    public CarrinhoController(CarrinhoService carrinhoService) {
-//        this.carrinhoService = carrinhoService;
-//    }
-//
-//    @GetMapping
-//    public List<ItemCarrinho> getItemCarrinho() {
-//        return carrinhoService.getCarrinho();
-//    }
-//
-//    @PostMapping("/adicionarproduto")
-//    public boolean adicionarProduto(int idCarrinho, int idProduto) {
-//        return carrinhoService.adicionarProduto(idCarrinho, idProduto);
-//    }
-//
-//    @DeleteMapping("/removerproduto")
-//    public boolean removerProduto(int idCarrinho, int idProduto) {
-//        return carrinhoService.removerProduto(idCarrinho, idProduto);
-//    }
-//
-//    @PutMapping("/atualizarquantidade")
-//    public boolean atualizarQuantidade(int idCarrinho, int idProduto, int novaQuantidade) {
-//        return carrinhoService.atualizarQuantidade(idCarrinho, idProduto, novaQuantidade);
-//    }
-//
-//    @PostMapping("/limparcarrinho")
-//    public void limparCarrinho(int idCarrinho) {
-//        carrinhoService.limparCarrinho(idCarrinho);
-//    }
-//
-//}
 package com.example.larmoby.controller;
 
 import com.example.larmoby.model.ItemCarrinho;
@@ -57,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/carrinhos")
+@CrossOrigin(origins = "http://localhost:3000")
 public class CarrinhoController {
 
     private final CarrinhoService carrinhoService;
@@ -66,24 +20,30 @@ public class CarrinhoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ItemCarrinho>> getItemCarrinho() {
+    public ResponseEntity<List<ItemCarrinho>> getCarrinho() {
         return ResponseEntity.ok(carrinhoService.getCarrinho());
     }
 
-    @PostMapping("/criar/{idCliente}")
-    public ResponseEntity<String> criarCarrinho(@PathVariable int idCliente) {
+    @GetMapping("/cliente/{idCliente}")
+    public ResponseEntity<?> getCarrinhoByCliente(@PathVariable int idCliente) {
         try {
-            carrinhoService.criarCarrinho(idCliente);
-            return ResponseEntity.ok("Carrinho criado com sucesso!");
+            List<ItemCarrinho> itens = carrinhoService.getCarrinhoByCliente(idCliente);
+            return ResponseEntity.ok(itens);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao criar carrinho: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Erro ao buscar carrinho: " + e.getMessage());
         }
     }
 
     @PostMapping("/adicionarproduto")
-    public ResponseEntity<String> adicionarProduto(@RequestParam int idCarrinho, @RequestParam int idProduto) {
-        carrinhoService.adicionarProduto(idCarrinho, idProduto);
-        return ResponseEntity.ok("Produto adicionado ao carrinho com sucesso!");
+    public ResponseEntity<?> adicionarProduto(
+            @RequestParam int idCarrinho,
+            @RequestParam int idProduto) {
+        try {
+            carrinhoService.adicionarProduto(idCarrinho, idProduto);
+            return ResponseEntity.ok("Produto adicionado com sucesso!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro ao adicionar produto: " + e.getMessage());
+        }
     }
 
     @DeleteMapping("/removerproduto")

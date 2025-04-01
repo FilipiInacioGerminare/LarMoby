@@ -1,5 +1,5 @@
 # Testes do carrinho
-#  GET http://localhost:8080/carrinhos
+ GET http://localhost:8080/carrinhos
 
 # POST http://localhost:8080/carrinhos/adicionarproduto?idCarrinho=1&idProduto=3
 
@@ -9,8 +9,7 @@
 
 # POST http://localhost:8080/carrinhos/limparcarrinho?idCarrinho=1
 
-POST http://localhost:8080/carrinhos/criar/8
-
+# POST http://localhost:8080/carrinhos/criar/9
 
 
 

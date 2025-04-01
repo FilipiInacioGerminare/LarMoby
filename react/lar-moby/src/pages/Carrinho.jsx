@@ -12,9 +12,7 @@ function Carrinho() {
   const getOrCreateCart = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/carrinhos/criar",
-        null,
-        { params: { idCliente } }
+        `http://localhost:8080/carrinhos/criar/${idCliente}`
       );
       return response.data.id_carrinho;
     } catch (error) {
@@ -31,32 +29,46 @@ function Carrinho() {
       }
 
       try {
-        const idCarrinho = await getOrCreateCart();
         const response = await axios.get(
-          `http://localhost:8080/carrinhos/${idCarrinho}`
+          `http://localhost:8080/carrinhos/cliente/${idCliente}`
         );
-        const items = await Promise.all(
+
+        if (!response.data || response.data.length === 0) {
+          setCartItems([]);
+          return;
+        }
+
+        const itemsWithDetails = await Promise.all(
           response.data.map(async (item) => {
-            const produtoResponse = await axios.get(
-              `http://localhost:8080/produtos/${item.id_produto}`
-            );
-            const produto = produtoResponse.data;
-            return {
-              id: item.id_produto,
-              name: produto.nome,
-              price: produto.preco,
-              quantity: item.quantidade,
-              image: produto.imagem_url,
-            };
+            try {
+              const produtoResponse = await axios.get(
+                `http://localhost:8080/produtos/${item.id_produto}`
+              );
+              return {
+                id: item.id_produto,
+                name: produtoResponse.data.nome,
+                price: produtoResponse.data.preco,
+                quantity: item.quantidade,
+                image: produtoResponse.data.imagem_url,
+                subtotal: item.subtotal,
+              };
+            } catch (error) {
+              console.error(
+                `Erro ao buscar produto ${item.id_produto}:`,
+                error
+              );
+              return null;
+            }
           })
         );
-        setCartItems(items);
+
+        setCartItems(itemsWithDetails.filter((item) => item !== null));
       } catch (error) {
         console.error("Erro ao buscar itens do carrinho:", error);
         setCartItems([]);
-        alert("Erro ao carregar o carrinho.");
       }
     };
+
     fetchCartItems();
   }, [idCliente]);
 
