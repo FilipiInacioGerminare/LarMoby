@@ -3,6 +3,7 @@ package com.example.larmoby.service;
 import com.example.larmoby.model.Carrinho;
 import com.example.larmoby.model.Cliente;
 import com.example.larmoby.model.ItemCarrinho;
+import com.example.larmoby.model.ItemCarrinhoView;
 import com.example.larmoby.model.Produto;
 import com.example.larmoby.repository.*;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,14 @@ public class CarrinhoService {
 
     private final ItemCarrinhoRepository itemCarrinhoRepository;
 
+    private final ItemCarrinhoViewRepository itemCarrinhoViewRepository;
+
     private final ProdutoRepository produtoRepository;
 
-    public CarrinhoService(CarrinhoRepository carrinhoRepository, ItemCarrinhoRepository itemCarrinhoRepository, ProdutoRepository produtoRepository) {
+    public CarrinhoService(CarrinhoRepository carrinhoRepository, ItemCarrinhoRepository itemCarrinhoRepository, ItemCarrinhoViewRepository itemCarrinhoViewRepository, ProdutoRepository produtoRepository) {
         this.carrinhoRepository = carrinhoRepository;
         this.itemCarrinhoRepository = itemCarrinhoRepository;
+        this.itemCarrinhoViewRepository = itemCarrinhoViewRepository;
         this.produtoRepository = produtoRepository;
     }
 
@@ -102,7 +106,7 @@ public class CarrinhoService {
         itemCarrinhoRepository.deleteItemCarrinhoByIdCarrinho(idCarrinho);
     }
 
-    public List<ItemCarrinho> getCarrinhoByCliente(int idCliente) {
+    public List<ItemCarrinhoView> getCarrinhoByCliente(int idCliente) {
         // Buscar ou criar carrinho para o cliente
         Carrinho carrinho = carrinhoRepository.findCarrinhoById_cliente(idCliente)
                 .orElseGet(() -> {
@@ -110,6 +114,7 @@ public class CarrinhoService {
                     return carrinhoRepository.save(novoCarrinho);
                 });
 
-        return itemCarrinhoRepository.findItemCarrinhoById_carrinho(carrinho.getId_carrinho());
+        // Buscar itens do carrinho usando a view
+        return itemCarrinhoViewRepository.findItensCarrinhoByIdCarrinho(carrinho.getId_carrinho());
     }
 }

@@ -82,6 +82,21 @@ CREATE TABLE cliente_endereco (
     PRIMARY KEY (id_cliente, id_endereco)
 );
 
+-- View para itens do carrinho com detalhes do produto
+CREATE VIEW vw_itens_carrinho AS
+SELECT 
+    ic.id_item_carrinho,
+    ic.id_carrinho,
+    ic.id_produto,
+    ic.quantidade,
+    ic.subtotal,
+    p.nome as nome_produto,
+    p.descricao as descricao_produto,
+    p.preco as preco_produto,
+    p.imagem_url
+FROM item_carrinho ic
+JOIN produto p ON ic.id_produto = p.id_produto;
+
 -- Inserir dados na tabela cliente
 INSERT INTO cliente (nome, email, senha, telefone, data_cadastro, data_criacao, status) VALUES
 ('João da Silva', 'joao.silva@email.com', 'senha123', '11999999999', '2023-10-26', '2023-10-26', 'ativo'),

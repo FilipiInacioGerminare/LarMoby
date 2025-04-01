@@ -1,9 +1,9 @@
 # Testes do carrinho
- GET http://localhost:8080/carrinhos
+#  GET http://localhost:8080/carrinhos
 
 # POST http://localhost:8080/carrinhos/adicionarproduto?idCarrinho=1&idProduto=3
 
-# DELETE http://localhost:8080/carrinhos/removerproduto?idCarrinho=1&idProduto=1
+# DELETE http://localhost:8080/carrinhos/removerproduto?idCarrinho=9&idProduto=1
 
 # PUT http://localhost:8080/carrinhos/atualizarquantidade?idCarrinho=1&idProduto=2&novaQuantidade=3
 

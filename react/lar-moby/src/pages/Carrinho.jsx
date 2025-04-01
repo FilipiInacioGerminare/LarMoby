@@ -1,121 +1,46 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
 function Carrinho() {
   const [cartItems, setCartItems] = useState([]);
   const [cep, setCep] = useState("05116-001");
   const { cliente } = useAuth();
-  const idCliente = cliente ? cliente.id_cliente : null;
-
-  const getOrCreateCart = async () => {
-    try {
-      const response = await axios.post(
-        `http://localhost:8080/carrinhos/criar/${idCliente}`
-      );
-      return response.data.id_carrinho;
-    } catch (error) {
-      console.error("Erro ao criar/obter carrinho:", error);
-      throw error;
-    }
-  };
 
   useEffect(() => {
-    const fetchCartItems = async () => {
-      if (!idCliente) {
-        setCartItems([]);
-        return;
-      }
-
-      try {
-        const response = await axios.get(
-          `http://localhost:8080/carrinhos/cliente/${idCliente}`
-        );
-
-        if (!response.data || response.data.length === 0) {
-          setCartItems([]);
-          return;
-        }
-
-        const itemsWithDetails = await Promise.all(
-          response.data.map(async (item) => {
-            try {
-              const produtoResponse = await axios.get(
-                `http://localhost:8080/produtos/${item.id_produto}`
-              );
-              return {
-                id: item.id_produto,
-                name: produtoResponse.data.nome,
-                price: produtoResponse.data.preco,
-                quantity: item.quantidade,
-                image: produtoResponse.data.imagem_url,
-                subtotal: item.subtotal,
-              };
-            } catch (error) {
-              console.error(
-                `Erro ao buscar produto ${item.id_produto}:`,
-                error
-              );
-              return null;
-            }
-          })
-        );
-
-        setCartItems(itemsWithDetails.filter((item) => item !== null));
-      } catch (error) {
-        console.error("Erro ao buscar itens do carrinho:", error);
-        setCartItems([]);
-      }
-    };
-
-    fetchCartItems();
-  }, [idCliente]);
-
-  const removeFromCart = async (id) => {
-    if (!idCliente) return;
-
-    try {
-      const idCarrinho = await getOrCreateCart();
-      await axios.delete("http://localhost:8080/carrinhos/removerproduto", {
-        params: { idCarrinho, idProduto: id },
-      });
-      setCartItems(cartItems.filter((item) => item.id !== id));
-    } catch (error) {
-      console.error("Erro ao remover produto:", error);
-      alert("Erro ao remover produto do carrinho.");
+    // Carregar itens do localStorage
+    const savedCart = localStorage.getItem("cartItems");
+    if (savedCart) {
+      setCartItems(JSON.parse(savedCart));
     }
+  }, []);
+
+  const removeFromCart = (id) => {
+    const updatedCart = cartItems.filter((item) => item.id !== id);
+    setCartItems(updatedCart);
+    localStorage.setItem("cartItems", JSON.stringify(updatedCart));
   };
 
-  const updateQuantity = async (id, delta) => {
-    if (!idCliente) return;
-
-    const item = cartItems.find((i) => i.id === id);
-    const novaQuantidade = item.quantity + delta;
-
-    try {
-      const idCarrinho = await getOrCreateCart();
-      if (novaQuantidade <= 0) {
-        await removeFromCart(id);
-        return;
-      }
-
-      await axios.put(
-        "http://localhost:8080/carrinhos/atualizarquantidade",
-        null,
-        {
-          params: { idCarrinho, idProduto: id, novaQuantidade },
+  const updateQuantity = (id, delta) => {
+    const updatedCart = cartItems
+      .map((item) => {
+        if (item.id === id) {
+          const novaQuantidade = item.quantity + delta;
+          if (novaQuantidade <= 0) {
+            return null;
+          }
+          return {
+            ...item,
+            quantity: novaQuantidade,
+            subtotal: novaQuantidade * item.price,
+          };
         }
-      );
-      setCartItems(
-        cartItems.map((item) =>
-          item.id === id ? { ...item, quantity: novaQuantidade } : item
-        )
-      );
-    } catch (error) {
-      console.error("Erro ao atualizar quantidade:", error);
-      alert("Erro ao atualizar quantidade.");
-    }
+        return item;
+      })
+      .filter((item) => item !== null);
+
+    setCartItems(updatedCart);
+    localStorage.setItem("cartItems", JSON.stringify(updatedCart));
   };
 
   const subtotal = cartItems.reduce(
@@ -168,15 +93,16 @@ function Carrinho() {
               className="bg-white rounded-lg shadow-md p-4 mb-4 flex items-start"
             >
               <img
-                src={item.image}
-                alt={item.name}
+                src={item.imagem_url}
+                alt={item.nome}
                 className="w-24 h-24 object-cover mr-4"
               />
               <div className="flex-1">
                 <div className="flex justify-between">
                   <div>
-                    <h2 className="text-lg font-bold">{item.name}</h2>
+                    <h2 className="text-lg font-bold">{item.nome}</h2>
                     <p className="text-sm text-gray-600">Ref: #{item.id}</p>
+                    <p className="text-sm text-gray-600">{item.descricao}</p>
                     <p className="text-sm text-gray-600">
                       Vendido por{" "}
                       <span className="text-[#EBC351]">LarMoby</span>
@@ -202,7 +128,7 @@ function Carrinho() {
                     </svg>
                   </button>
                 </div>
-                <div className="flex items-center mt-2">
+                <div className="flex items-center justify-between mt-2">
                   <div className="flex items-center border rounded">
                     <button
                       onClick={() => updateQuantity(item.id, -1)}
@@ -217,6 +143,14 @@ function Carrinho() {
                     >
                       +
                     </button>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-600">
+                      Preço unitário: R${item.price.toFixed(2)}
+                    </p>
+                    <p className="font-bold">
+                      Subtotal: R${item.subtotal.toFixed(2)}
+                    </p>
                   </div>
                 </div>
               </div>

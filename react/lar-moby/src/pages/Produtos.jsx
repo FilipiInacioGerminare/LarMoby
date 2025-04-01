@@ -26,23 +26,41 @@ function Produtos({ searchCategory = "" }) {
   }, []);
 
   // Adicionar ao carrinho
-  const addToCart = async (product) => {
+  const addToCart = (product) => {
     if (!idCliente) {
       alert("Faça login para adicionar produtos ao carrinho!");
       return;
     }
 
     try {
-      await axios.post(
-        `http://localhost:8080/carrinhos/adicionarproduto`,
-        null,
-        {
-          params: {
-            idCarrinho: idCliente,
-            idProduto: product.id_produto,
-          },
-        }
+      // Buscar carrinho atual do localStorage
+      const savedCart = localStorage.getItem("cartItems");
+      const currentCart = savedCart ? JSON.parse(savedCart) : [];
+
+      // Verificar se o produto já existe no carrinho
+      const existingItem = currentCart.find(
+        (item) => item.id === product.id_produto
       );
+
+      if (existingItem) {
+        // Atualizar quantidade e subtotal do item existente
+        existingItem.quantity += 1;
+        existingItem.subtotal = existingItem.quantity * existingItem.price;
+      } else {
+        // Adicionar novo item ao carrinho
+        currentCart.push({
+          id: product.id_produto,
+          nome: product.nome,
+          descricao: product.descricao,
+          price: product.preco,
+          quantity: 1,
+          subtotal: product.preco,
+          imagem_url: product.imagem_url,
+        });
+      }
+
+      // Salvar carrinho atualizado no localStorage
+      localStorage.setItem("cartItems", JSON.stringify(currentCart));
       alert("Produto adicionado ao carrinho com sucesso!");
     } catch (error) {
       console.error("Erro ao adicionar ao carrinho:", error);

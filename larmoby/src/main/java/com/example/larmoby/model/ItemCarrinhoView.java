@@ -3,48 +3,27 @@ package com.example.larmoby.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "item_carrinho")
-public class ItemCarrinho {
+@Table(name = "vw_itens_carrinho")
+public class ItemCarrinhoView {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_item_carrinho;
+    private int id_carrinho;
     private int id_produto;
     private int quantidade;
     private float subtotal;
-    private int id_carrinho;
-    
-    // Campos adicionais para detalhes do produto
-    @Transient
     private String nome_produto;
-    @Transient
     private String descricao_produto;
-    @Transient
     private float preco_produto;
-
-    // Construtores
-    public ItemCarrinho(){}
-
-    public ItemCarrinho(int id_item_carrinho, int id_produto, int quantidade, float subtotal, int id_carrinho) {
-        this.id_item_carrinho = id_item_carrinho;
-        this.id_produto = id_produto;
-        this.quantidade = quantidade;
-        this.subtotal = subtotal;
-        this.id_carrinho = id_carrinho;
-    }
-
-    public ItemCarrinho(int id_item_carrinho, int id_produto, int quantidade, float subtotal, int id_carrinho, 
-                       String nome_produto, String descricao_produto, float preco_produto) {
-        this.id_item_carrinho = id_item_carrinho;
-        this.id_produto = id_produto;
-        this.quantidade = quantidade;
-        this.subtotal = subtotal;
-        this.id_carrinho = id_carrinho;
-        this.nome_produto = nome_produto;
-        this.descricao_produto = descricao_produto;
-        this.preco_produto = preco_produto;
-    }
+    private String imagem_url;
 
     // Getters e Setters
+    public int getId_item_carrinho() {
+        return id_item_carrinho;
+    }
+
+    public void setId_item_carrinho(int id_item_carrinho) {
+        this.id_item_carrinho = id_item_carrinho;
+    }
 
     public int getId_carrinho() {
         return id_carrinho;
@@ -52,14 +31,6 @@ public class ItemCarrinho {
 
     public void setId_carrinho(int id_carrinho) {
         this.id_carrinho = id_carrinho;
-    }
-
-    public int getId_item_carrinho() {
-        return id_item_carrinho;
-    }
-
-    public void setId_item_carrinho(int id_item_carrinho) {
-        this.id_item_carrinho = id_item_carrinho;
     }
 
     public int getId_produto() {
@@ -86,7 +57,6 @@ public class ItemCarrinho {
         this.subtotal = subtotal;
     }
 
-    // Novos getters e setters
     public String getNome_produto() {
         return nome_produto;
     }
@@ -110,4 +80,12 @@ public class ItemCarrinho {
     public void setPreco_produto(float preco_produto) {
         this.preco_produto = preco_produto;
     }
-}
+
+    public String getImagem_url() {
+        return imagem_url;
+    }
+
+    public void setImagem_url(String imagem_url) {
+        this.imagem_url = imagem_url;
+    }
+} 

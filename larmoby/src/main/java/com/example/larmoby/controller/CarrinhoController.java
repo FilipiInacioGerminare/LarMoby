@@ -1,6 +1,7 @@
 package com.example.larmoby.controller;
 
 import com.example.larmoby.model.ItemCarrinho;
+import com.example.larmoby.model.ItemCarrinhoView;
 import com.example.larmoby.service.CarrinhoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ public class CarrinhoController {
     @GetMapping("/cliente/{idCliente}")
     public ResponseEntity<?> getCarrinhoByCliente(@PathVariable int idCliente) {
         try {
-            List<ItemCarrinho> itens = carrinhoService.getCarrinhoByCliente(idCliente);
+            List<ItemCarrinhoView> itens = carrinhoService.getCarrinhoByCliente(idCliente);
             return ResponseEntity.ok(itens);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Erro ao buscar carrinho: " + e.getMessage());
