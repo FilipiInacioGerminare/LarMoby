@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
 function Carrinho() {
   const [cartItems, setCartItems] = useState([]);
   const [cep, setCep] = useState("05116-001");
-  const { cliente } = useAuth();
 
   useEffect(() => {
     // Carregar itens do localStorage
