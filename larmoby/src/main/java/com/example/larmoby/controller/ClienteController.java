@@ -64,4 +64,14 @@ public class ClienteController {
             return ResponseEntity.status(500).body(null);
         }
     }
+
+    @PutMapping("/toggleadmin/{idCliente}")
+    public ResponseEntity<String> toggleAdminStatus(@PathVariable int idCliente) {
+        try {
+            clienteService.toggleAdminStatus(idCliente);
+            return ResponseEntity.ok("Status de admin atualizado com sucesso!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erro ao atualizar status de admin: " + e.getMessage());
+        }
+    }
 }

@@ -81,4 +81,12 @@ public class ClienteService {
             throw e;
         }
     }
+
+    @Transactional
+    public void toggleAdminStatus(int idCliente) {
+        Cliente cliente = clienteRepository.findClienteById_cliente(idCliente)
+                .orElseThrow(() -> new IllegalStateException("cliente com o id " + idCliente + " não existe"));
+        cliente.setAdmin(!cliente.isAdmin());
+        clienteRepository.save(cliente);
+    }
 }

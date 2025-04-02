@@ -1,3 +1,15 @@
+-- Destruidor de banco 
+DROP VIEW IF EXISTS vw_itens_carrinho;
+DROP TABLE IF EXISTS cliente_endereco;
+DROP TABLE IF EXISTS item_pedido;
+DROP TABLE IF EXISTS item_carrinho;
+DROP TABLE IF EXISTS pedido;
+DROP TABLE IF EXISTS carrinho;
+DROP TABLE IF EXISTS produto;
+DROP TABLE IF EXISTS cliente;
+DROP TABLE IF EXISTS endereco;
+DROP TABLE IF EXISTS categoria;
+
 -- Tabela cliente
 CREATE TABLE cliente (
     id_cliente SERIAL PRIMARY KEY,
@@ -7,7 +19,8 @@ CREATE TABLE cliente (
     telefone VARCHAR(20),
     data_cadastro DATE,
     data_criacao DATE,
-    status VARCHAR(50)
+    status VARCHAR(50),
+    admin BOOLEAN DEFAULT FALSE
 );
 
 -- Tabela endereco
@@ -157,7 +170,13 @@ select * from carrinho;
 select * from item_carrinho;
 select * from produto;
 select * from pedido;
-select * from item_produto;
+select * from item_pedido;
 select * from cliente_endereco;
+
+
+INSERT INTO cliente (nome, email, senha, telefone, data_cadastro, data_criacao, status, admin) VALUES
+('b', 'b@email.com', '123', '11999999999', '2024-10-25', '2024-10-25', 'ativo', true);
+
+UPDATE cliente SET admin = true WHERE id_cliente = 1;
 
 

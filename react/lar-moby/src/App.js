@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Buscar from "./pages/Search";
 import Perfil from "./pages/Perfil";
 import Navbar from "./components/Navbar";
+import Admin from "./pages/Admin";
 
 // Componente de layout para páginas com Navbar
 const LayoutWithNavbar = ({ children }) => (
@@ -28,6 +29,7 @@ function App() {
             {/* Página de Login sem Navbar */}
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/admin" element={<Admin />} />
 
             {/* Páginas com Navbar */}
             <Route
