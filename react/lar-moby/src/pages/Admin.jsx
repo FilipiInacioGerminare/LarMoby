@@ -1,120 +1,129 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function Admin() {
   const [activeTab, setActiveTab] = useState("produtos");
   const [produtos, setProdutos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [clientes, setClientes] = useState([]);
-  const [newProduto, setNewProduto] = useState({
+  const [novoProduto, setNovoProduto] = useState({
     nome: "",
     descricao: "",
     preco: "",
     imagem_url: "",
+    destaque: false,
     qnt_estoque: "",
     id_categoria: "",
   });
-  const [newCategoria, setNewCategoria] = useState({ nome: "" });
-  const [message, setMessage] = useState("");
-  const { cliente } = useAuth();
+  const [novaCategoria, setNovaCategoria] = useState({ nome: "" });
+  const { cliente, isLoading } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (isLoading) return;
 
-  const fetchData = async () => {
-    try {
-      const [produtosRes, categoriasRes, clientesRes] = await Promise.all([
-        axios.get("http://localhost:8080/produtos"),
-        axios.get("http://localhost:8080/categorias"),
-        axios.get("http://localhost:8080/clientes"),
-      ]);
-      setProdutos(produtosRes.data);
-      setCategorias(categoriasRes.data);
-      setClientes(clientesRes.data);
-    } catch (error) {
-      console.error("Erro ao buscar dados:", error);
-      setMessage("Erro ao carregar dados");
+    if (!cliente || !cliente.admin) {
+      navigate("/home");
+      return;
     }
-  };
+
+    const fetchData = async () => {
+      try {
+        const [produtosRes, categoriasRes, clientesRes] = await Promise.all([
+          axios.get("http://localhost:8080/produtos"),
+          axios.get("http://localhost:8080/categorias"),
+          axios.get("http://localhost:8080/clientes"),
+        ]);
+
+        setProdutos(produtosRes.data);
+        setCategorias(categoriasRes.data);
+        setClientes(clientesRes.data);
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+      }
+    };
+
+    fetchData();
+  }, [cliente, isLoading, navigate]);
 
   const handleSubmitProduto = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/produtos", newProduto);
-      setMessage("Produto adicionado com sucesso!");
-      setNewProduto({
+      await axios.post("http://localhost:8080/produtos/inserir", novoProduto);
+      setNovoProduto({
         nome: "",
         descricao: "",
         preco: "",
         imagem_url: "",
+        destaque: false,
         qnt_estoque: "",
         id_categoria: "",
       });
-      fetchData();
+      const response = await axios.get("http://localhost:8080/produtos");
+      setProdutos(response.data);
     } catch (error) {
-      setMessage("Erro ao adicionar produto");
+      console.error("Erro ao criar produto:", error);
     }
   };
 
   const handleSubmitCategoria = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/categorias", newCategoria);
-      setMessage("Categoria adicionada com sucesso!");
-      setNewCategoria({ nome: "" });
-      fetchData();
+      await axios.post(
+        "http://localhost:8080/categorias/inserir",
+        novaCategoria
+      );
+      setNovaCategoria({ nome: "" });
+      const response = await axios.get("http://localhost:8080/categorias");
+      setCategorias(response.data);
     } catch (error) {
-      setMessage("Erro ao adicionar categoria");
+      console.error("Erro ao criar categoria:", error);
     }
   };
 
-  const handleToggleAdmin = async (idCliente) => {
+  const handleDeleteCategoria = async (idCategoria) => {
+    try {
+      await axios.delete(
+        `http://localhost:8080/categorias/deletar/${idCategoria}`
+      );
+      const response = await axios.get("http://localhost:8080/categorias");
+      setCategorias(response.data);
+    } catch (error) {
+      console.error("Erro ao deletar categoria:", error);
+    }
+  };
+
+  const handleDeleteProduto = async (idProduto) => {
+    try {
+      await axios.delete(`http://localhost:8080/produtos/deletar/${idProduto}`);
+      const response = await axios.get("http://localhost:8080/produtos");
+      setProdutos(response.data);
+    } catch (error) {
+      console.error("Erro ao deletar produto:", error);
+    }
+  };
+
+  const toggleAdminStatus = async (idCliente) => {
     try {
       await axios.put(
         `http://localhost:8080/clientes/toggleadmin/${idCliente}`
       );
-      setMessage("Status de admin atualizado com sucesso!");
-      fetchData();
+      const response = await axios.get("http://localhost:8080/clientes");
+      setClientes(response.data);
     } catch (error) {
-      setMessage("Erro ao atualizar status de admin");
+      console.error("Erro ao alterar status de admin:", error);
     }
   };
 
-  const handleDeleteProduto = async (id) => {
-    if (window.confirm("Tem certeza que deseja deletar este produto?")) {
-      try {
-        await axios.delete(`http://localhost:8080/produtos/${id}`);
-        setMessage("Produto deletado com sucesso!");
-        fetchData();
-      } catch (error) {
-        setMessage("Erro ao deletar produto");
-      }
-    }
-  };
-
-  const handleDeleteCategoria = async (id) => {
-    if (window.confirm("Tem certeza que deseja deletar esta categoria?")) {
-      try {
-        await axios.delete(`http://localhost:8080/categorias/${id}`);
-        setMessage("Categoria deletada com sucesso!");
-        fetchData();
-      } catch (error) {
-        setMessage("Erro ao deletar categoria");
-      }
-    }
-  };
+  if (isLoading) {
+    return <div>Carregando...</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Painel Administrativo</h1>
-
-      {message && (
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded mb-4">
-          {message}
-        </div>
-      )}
 
       <div className="flex space-x-4 mb-6">
         <button
@@ -150,184 +159,213 @@ function Admin() {
       </div>
 
       {activeTab === "produtos" && (
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Gerenciar Produtos</h2>
-          <form onSubmit={handleSubmitProduto} className="mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h2 className="text-xl font-bold mb-4">Adicionar Novo Produto</h2>
+            <form onSubmit={handleSubmitProduto} className="space-y-4">
               <input
                 type="text"
                 placeholder="Nome do produto"
-                value={newProduto.nome}
+                value={novoProduto.nome}
                 onChange={(e) =>
-                  setNewProduto({ ...newProduto, nome: e.target.value })
+                  setNovoProduto({ ...novoProduto, nome: e.target.value })
                 }
-                className="border p-2 rounded"
+                className="w-full p-2 border rounded"
               />
-              <input
-                type="text"
+              <textarea
                 placeholder="Descrição"
-                value={newProduto.descricao}
+                value={novoProduto.descricao}
                 onChange={(e) =>
-                  setNewProduto({ ...newProduto, descricao: e.target.value })
+                  setNovoProduto({ ...novoProduto, descricao: e.target.value })
                 }
-                className="border p-2 rounded"
+                className="w-full p-2 border rounded"
               />
               <input
                 type="number"
                 placeholder="Preço"
-                value={newProduto.preco}
+                value={novoProduto.preco}
                 onChange={(e) =>
-                  setNewProduto({ ...newProduto, preco: e.target.value })
+                  setNovoProduto({ ...novoProduto, preco: e.target.value })
                 }
-                className="border p-2 rounded"
+                className="w-full p-2 border rounded"
               />
               <input
                 type="text"
                 placeholder="URL da imagem"
-                value={newProduto.imagem_url}
+                value={novoProduto.imagem_url}
                 onChange={(e) =>
-                  setNewProduto({ ...newProduto, imagem_url: e.target.value })
+                  setNovoProduto({ ...novoProduto, imagem_url: e.target.value })
                 }
-                className="border p-2 rounded"
+                className="w-full p-2 border rounded"
               />
               <input
                 type="number"
                 placeholder="Quantidade em estoque"
-                value={newProduto.qnt_estoque}
+                value={novoProduto.qnt_estoque}
                 onChange={(e) =>
-                  setNewProduto({ ...newProduto, qnt_estoque: e.target.value })
+                  setNovoProduto({
+                    ...novoProduto,
+                    qnt_estoque: e.target.value,
+                  })
                 }
-                className="border p-2 rounded"
+                className="w-full p-2 border rounded"
               />
               <select
-                value={newProduto.id_categoria}
+                value={novoProduto.id_categoria}
                 onChange={(e) =>
-                  setNewProduto({ ...newProduto, id_categoria: e.target.value })
+                  setNovoProduto({
+                    ...novoProduto,
+                    id_categoria: e.target.value,
+                  })
                 }
-                className="border p-2 rounded"
+                className="w-full p-2 border rounded"
               >
                 <option value="">Selecione uma categoria</option>
-                {categorias.map((cat) => (
-                  <option key={cat.id_categoria} value={cat.id_categoria}>
-                    {cat.nome}
+                {categorias.map((categoria) => (
+                  <option
+                    key={categoria.id_categoria}
+                    value={categoria.id_categoria}
+                  >
+                    {categoria.nome}
                   </option>
                 ))}
               </select>
-            </div>
-            <button
-              type="submit"
-              className="mt-4 bg-yellow-500 text-white px-4 py-2 rounded"
-            >
-              Adicionar Produto
-            </button>
-          </form>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {produtos.map((produto) => (
-              <div
-                key={produto.id_produto}
-                className="border p-4 rounded shadow"
-              >
-                <img
-                  src={produto.imagem_url}
-                  alt={produto.nome}
-                  className="w-full h-48 object-cover mb-4"
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={novoProduto.destaque}
+                  onChange={(e) =>
+                    setNovoProduto({
+                      ...novoProduto,
+                      destaque: e.target.checked,
+                    })
+                  }
+                  className="mr-2"
                 />
-                <h3 className="font-bold">{produto.nome}</h3>
-                <p className="text-gray-600">{produto.descricao}</p>
-                <p className="font-bold mt-2">R$ {produto.preco}</p>
-                <p>Estoque: {produto.qnt_estoque}</p>
-                <button
-                  onClick={() => handleDeleteProduto(produto.id_produto)}
-                  className="mt-2 bg-red-500 text-white px-4 py-2 rounded"
-                >
-                  Deletar
-                </button>
+                <label>Produto em destaque</label>
               </div>
-            ))}
+              <button
+                type="submit"
+                className="w-full bg-yellow-500 text-white p-2 rounded"
+              >
+                Adicionar Produto
+              </button>
+            </form>
+          </div>
+
+          <div>
+            <h2 className="text-xl font-bold mb-4">Lista de Produtos</h2>
+            <div className="space-y-4">
+              {produtos.map((produto) => (
+                <div
+                  key={produto.id_produto}
+                  className="border p-4 rounded flex justify-between items-center"
+                >
+                  <div>
+                    <h3 className="font-bold">{produto.nome}</h3>
+                    <p className="text-sm text-gray-600">
+                      R$ {produto.preco.toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <span className="text-sm text-gray-500">
+                      Estoque: {produto.qnt_estoque}
+                    </span>
+                    <button
+                      onClick={() => handleDeleteProduto(produto.id_produto)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Deletar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
       {activeTab === "categorias" && (
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Gerenciar Categorias</h2>
-          <form onSubmit={handleSubmitCategoria} className="mb-8">
-            <div className="flex gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h2 className="text-xl font-bold mb-4">Adicionar Nova Categoria</h2>
+            <form onSubmit={handleSubmitCategoria} className="space-y-4">
               <input
                 type="text"
                 placeholder="Nome da categoria"
-                value={newCategoria.nome}
+                value={novaCategoria.nome}
                 onChange={(e) =>
-                  setNewCategoria({ ...newCategoria, nome: e.target.value })
+                  setNovaCategoria({ ...novaCategoria, nome: e.target.value })
                 }
-                className="border p-2 rounded flex-grow"
+                className="w-full p-2 border rounded"
               />
               <button
                 type="submit"
-                className="bg-yellow-500 text-white px-4 py-2 rounded"
+                className="w-full bg-yellow-500 text-white p-2 rounded"
               >
                 Adicionar Categoria
               </button>
-            </div>
-          </form>
+            </form>
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {categorias.map((categoria) => (
-              <div
-                key={categoria.id_categoria}
-                className="border p-4 rounded shadow"
-              >
-                <h3 className="font-bold">{categoria.nome}</h3>
-                <button
-                  onClick={() => handleDeleteCategoria(categoria.id_categoria)}
-                  className="mt-2 bg-red-500 text-white px-4 py-2 rounded"
+          <div>
+            <h2 className="text-xl font-bold mb-4">Lista de Categorias</h2>
+            <div className="space-y-4">
+              {categorias.map((categoria) => (
+                <div
+                  key={categoria.id_categoria}
+                  className="border p-4 rounded"
                 >
-                  Deletar
-                </button>
-              </div>
-            ))}
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-bold">{categoria.nome}</h3>
+                    <button
+                      onClick={() =>
+                        handleDeleteCategoria(categoria.id_categoria)
+                      }
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Deletar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       )}
 
       {activeTab === "clientes" && (
         <div>
-          <h2 className="text-2xl font-bold mb-4">Gerenciar Clientes</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="px-6 py-3 text-left">Nome</th>
-                  <th className="px-6 py-3 text-left">Email</th>
-                  <th className="px-6 py-3 text-left">Status</th>
-                  <th className="px-6 py-3 text-left">Admin</th>
-                  <th className="px-6 py-3 text-left">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {clientes.map((cliente) => (
-                  <tr key={cliente.id_cliente} className="border-b">
-                    <td className="px-6 py-4">{cliente.nome}</td>
-                    <td className="px-6 py-4">{cliente.email}</td>
-                    <td className="px-6 py-4">{cliente.status}</td>
-                    <td className="px-6 py-4">
-                      {cliente.admin ? "Sim" : "Não"}
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => handleToggleAdmin(cliente.id_cliente)}
-                        className={`px-4 py-2 rounded ${
-                          cliente.admin ? "bg-red-500" : "bg-green-500"
-                        } text-white`}
-                      >
-                        {cliente.admin ? "Remover Admin" : "Tornar Admin"}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <h2 className="text-xl font-bold mb-4">Lista de Clientes</h2>
+          <div className="space-y-4">
+            {clientes.map((cliente) => (
+              <div
+                key={cliente.id_cliente}
+                className="border p-4 rounded flex justify-between items-center"
+              >
+                <div>
+                  <h3 className="font-bold">{cliente.nome}</h3>
+                  <p className="text-sm text-gray-600">{cliente.email}</p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <span
+                    className={`px-2 py-1 rounded text-sm ${
+                      cliente.admin
+                        ? "bg-green-100 text-green-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
+                    {cliente.admin ? "Admin" : "Usuário"}
+                  </span>
+                  <button
+                    onClick={() => toggleAdminStatus(cliente.id_cliente)}
+                    className="text-yellow-500 hover:text-yellow-600"
+                  >
+                    {cliente.admin ? "Remover Admin" : "Tornar Admin"}
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

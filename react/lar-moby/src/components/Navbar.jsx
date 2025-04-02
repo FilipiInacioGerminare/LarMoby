@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
+import { FaSearch, FaShoppingCart, FaUser, FaUserShield } from "react-icons/fa";
 import Logo from "../assets/Sofa With Buttons.png";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -71,6 +71,11 @@ function Navbar() {
                 <Link to="/perfil" title="Perfil">
                   <FaUser className="text-xl md:text-2xl" />
                 </Link>
+                {cliente.admin && (
+                  <Link to="/admin" title="Painel Administrativo">
+                    <FaUserShield className="text-xl md:text-3xl" />
+                  </Link>
+                )}
                 <button
                   onClick={handleLogout}
                   className="text-white hover:underline"

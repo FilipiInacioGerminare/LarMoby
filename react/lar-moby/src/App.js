@@ -29,7 +29,6 @@ function App() {
             {/* Página de Login sem Navbar */}
             <Route path="/" element={<Login />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/admin" element={<Admin />} />
 
             {/* Páginas com Navbar */}
             <Route
@@ -37,6 +36,14 @@ function App() {
               element={
                 <LayoutWithNavbar>
                   <Home />
+                </LayoutWithNavbar>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <LayoutWithNavbar>
+                  <Admin />
                 </LayoutWithNavbar>
               }
             />
