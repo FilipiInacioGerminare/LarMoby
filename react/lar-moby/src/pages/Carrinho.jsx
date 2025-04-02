@@ -1,25 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Carrinho() {
   const [cartItems, setCartItems] = useState([]);
   const [cep, setCep] = useState("05116-001");
+  const { cliente } = useAuth();
+  const idCliente = cliente ? cliente.id_cliente : null;
 
   useEffect(() => {
-    // Carregar itens do localStorage
-    const savedCart = localStorage.getItem("cartItems");
+    if (!idCliente) {
+      setCartItems([]);
+      return;
+    }
+
+    // Carregar itens do localStorage com chave específica por cliente
+    const cartKey = `cartItems_${idCliente}`;
+    const savedCart = localStorage.getItem(cartKey);
     if (savedCart) {
       setCartItems(JSON.parse(savedCart));
     }
-  }, []);
+  }, [idCliente]);
 
   const removeFromCart = (id) => {
+    const cartKey = `cartItems_${idCliente}`;
     const updatedCart = cartItems.filter((item) => item.id !== id);
     setCartItems(updatedCart);
-    localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+    localStorage.setItem(cartKey, JSON.stringify(updatedCart));
   };
 
   const updateQuantity = (id, delta) => {
+    const cartKey = `cartItems_${idCliente}`;
     const updatedCart = cartItems
       .map((item) => {
         if (item.id === id) {
@@ -38,7 +49,7 @@ function Carrinho() {
       .filter((item) => item !== null);
 
     setCartItems(updatedCart);
-    localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+    localStorage.setItem(cartKey, JSON.stringify(updatedCart));
   };
 
   const subtotal = cartItems.reduce(
@@ -46,6 +57,24 @@ function Carrinho() {
     0
   );
   const total = subtotal;
+
+  if (!idCliente) {
+    return (
+      <div className="min-h-screen container flex mx-auto px-4 py-6 text-center justify-center">
+        <div className="flex flex-col items-center">
+          <h2 className="text-xl font-bold mb-2">
+            Faça login para ver seu carrinho
+          </h2>
+          <Link
+            to="/login"
+            className="border border-[#EBC351] text-[#EBC351] px-4 py-2 rounded"
+          >
+            Fazer login
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (

@@ -11,7 +11,6 @@ function Produtos({ searchCategory = "" }) {
   const { cliente } = useAuth();
   const idCliente = cliente ? cliente.id_cliente : null;
 
-  // Buscar produtos do backend
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -25,7 +24,6 @@ function Produtos({ searchCategory = "" }) {
     fetchProducts();
   }, []);
 
-  // Adicionar ao carrinho
   const addToCart = (product) => {
     if (!idCliente) {
       alert("Faça login para adicionar produtos ao carrinho!");
@@ -33,8 +31,9 @@ function Produtos({ searchCategory = "" }) {
     }
 
     try {
-      // Buscar carrinho atual do localStorage
-      const savedCart = localStorage.getItem("cartItems");
+      // Usar chave específica por cliente no localStorage
+      const cartKey = `cartItems_${idCliente}`;
+      const savedCart = localStorage.getItem(cartKey);
       const currentCart = savedCart ? JSON.parse(savedCart) : [];
 
       // Verificar se o produto já existe no carrinho
@@ -60,7 +59,7 @@ function Produtos({ searchCategory = "" }) {
       }
 
       // Salvar carrinho atualizado no localStorage
-      localStorage.setItem("cartItems", JSON.stringify(currentCart));
+      localStorage.setItem(cartKey, JSON.stringify(currentCart));
       alert("Produto adicionado ao carrinho com sucesso!");
     } catch (error) {
       console.error("Erro ao adicionar ao carrinho:", error);
