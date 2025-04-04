@@ -173,10 +173,12 @@ function Carrinho() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-600">
-                      Preço unitário: R${item.price.toFixed(2)}
+                      Preço unitário: R$
+                      {item.price ? item.price.toFixed(2) : "0.00"}
                     </p>
                     <p className="font-bold">
-                      Subtotal: R${item.subtotal.toFixed(2)}
+                      Subtotal: R$
+                      {item.subtotal ? item.subtotal.toFixed(2) : "0.00"}
                     </p>
                   </div>
                 </div>
@@ -209,7 +211,7 @@ function Carrinho() {
             <h2 className="text-lg font-bold mb-4">Resumo da compra</h2>
             <div className="flex justify-between mb-2">
               <span>Subtotal ({cartItems.length} item)</span>
-              <span>R${subtotal.toFixed(2)}</span>
+              <span>R${subtotal ? subtotal.toFixed(2) : "0.00"}</span>
             </div>
             <div className="flex justify-between mb-2">
               <span>Frete Grátis</span>
@@ -217,7 +219,7 @@ function Carrinho() {
             </div>
             <div className="flex justify-between mb-2 font-bold">
               <span>Valor total</span>
-              <span>R${total.toFixed(2)}</span>
+              <span>R${total ? total.toFixed(2) : "0.00"}</span>
             </div>
             <button className="bg-purple-600 text-white w-full py-2 rounded">
               Finalizar

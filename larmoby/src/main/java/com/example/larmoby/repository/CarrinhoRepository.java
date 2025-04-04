@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 @Repository
 
-public interface CarrinhoRepository extends JpaRepository<Carrinho, Long> {
+public interface CarrinhoRepository extends JpaRepository<Carrinho, Integer> {
     @Query("SELECT c FROM Carrinho c WHERE c.id_cliente = ?1")
     Optional<Carrinho> findCarrinhoById_cliente(int id_cliente);
     @Query("SELECT c FROM Carrinho c WHERE c.id_carrinho = ?1")

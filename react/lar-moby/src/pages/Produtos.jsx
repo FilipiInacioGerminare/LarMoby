@@ -41,6 +41,9 @@ function Produtos({ searchCategory = "" }) {
         (item) => item.id === product.id_produto
       );
 
+      // Garantir que o preço seja um número
+      const preco = product.preco ? parseFloat(product.preco) : 0;
+
       if (existingItem) {
         // Atualizar quantidade e subtotal do item existente
         existingItem.quantity += 1;
@@ -51,9 +54,9 @@ function Produtos({ searchCategory = "" }) {
           id: product.id_produto,
           nome: product.nome,
           descricao: product.descricao,
-          price: product.preco,
+          price: preco,
           quantity: 1,
-          subtotal: product.preco,
+          subtotal: preco,
           imagem_url: product.imagem_url,
         });
       }
@@ -247,7 +250,7 @@ function Produtos({ searchCategory = "" }) {
               <div className="p-4">
                 <p className="text-sm text-gray-700 mb-2">{product.nome}</p>
                 <p className="text-lg font-bold text-gray-900 mb-1">
-                  R${product.preco.toFixed(2)} no pix
+                  R${product.preco ? product.preco.toFixed(2) : "0.00"} no pix
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
                   Estoque: {product.qnt_estoque}

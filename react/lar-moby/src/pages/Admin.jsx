@@ -51,7 +51,15 @@ function Admin() {
   const handleSubmitProduto = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8080/produtos/inserir", novoProduto);
+      const produtoParaEnviar = {
+        ...novoProduto,
+        preco: novoProduto.preco ? parseFloat(novoProduto.preco) : 0,
+      };
+
+      await axios.post(
+        "http://localhost:8080/produtos/inserir",
+        produtoParaEnviar
+      );
       setNovoProduto({
         nome: "",
         descricao: "",
@@ -264,7 +272,7 @@ function Admin() {
                   <div>
                     <h3 className="font-bold">{produto.nome}</h3>
                     <p className="text-sm text-gray-600">
-                      R$ {produto.preco.toFixed(2)}
+                      R$ {produto.preco ? produto.preco.toFixed(2) : "0.00"}
                     </p>
                   </div>
                   <div className="flex items-center space-x-4">
