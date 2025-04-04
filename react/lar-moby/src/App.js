@@ -11,6 +11,7 @@ import Buscar from "./pages/Search";
 import Perfil from "./pages/Perfil";
 import Navbar from "./components/Navbar";
 import Admin from "./pages/Admin";
+import FinalizarCompra from "./pages/FinalizarCompra";
 
 // Componente de layout para páginas com Navbar
 const LayoutWithNavbar = ({ children }) => (
@@ -69,6 +70,16 @@ function App() {
                 <ProtectedRoute>
                   <LayoutWithNavbar>
                     <Carrinho />
+                  </LayoutWithNavbar>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/finalizar-compra"
+              element={
+                <ProtectedRoute>
+                  <LayoutWithNavbar>
+                    <FinalizarCompra />
                   </LayoutWithNavbar>
                 </ProtectedRoute>
               }

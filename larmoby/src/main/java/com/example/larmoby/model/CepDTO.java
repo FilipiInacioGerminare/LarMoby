@@ -11,6 +11,7 @@ public class CepDTO {
     private String gia;
     private String ddd;
     private String siafi;
+    private Boolean erro;
 
     // Getters e Setters
     public String getCep() {
@@ -72,5 +73,11 @@ public class CepDTO {
     }
     public void setSiafi(String siafi) {
         this.siafi = siafi;
+    }
+    public Boolean getErro() {
+        return erro;
+    }
+    public void setErro(Boolean erro) {
+        this.erro = erro;
     }
 }

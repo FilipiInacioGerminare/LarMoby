@@ -1,13 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 function Carrinho() {
   const [cartItems, setCartItems] = useState([]);
-  const [cep, setCep] = useState("05116-001");
+  const [cep, setCep] = useState("");
+  const [endereco, setEndereco] = useState({
+    logradouro: "",
+    bairro: "",
+    localidade: "",
+    uf: "",
+  });
+  const [loadingCep, setLoadingCep] = useState(false);
+  const [frete, setFrete] = useState(0);
   const { cliente } = useAuth();
   const idCliente = cliente ? cliente.id_cliente : null;
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!idCliente) {
@@ -67,11 +77,94 @@ function Carrinho() {
     });
   };
 
+  const consultarCep = async () => {
+    if (!cep || cep.length !== 8) {
+      Swal.fire({
+        title: "Erro!",
+        text: "Por favor, insira um CEP válido com 8 dígitos.",
+        icon: "error",
+      });
+      return;
+    }
+
+    setLoadingCep(true);
+    try {
+      const response = await axios.get(`http://localhost:8080/cep/${cep}`);
+      const data = response.data;
+
+      if (data.erro) {
+        Swal.fire({
+          title: "Erro!",
+          text: "CEP não encontrado.",
+          icon: "error",
+        });
+        return;
+      }
+
+      setEndereco({
+        logradouro: data.logradouro || "",
+        bairro: data.bairro || "",
+        localidade: data.localidade || "",
+        uf: data.uf || "",
+        cep: cep,
+      });
+
+      // Gerar um preço aleatório de frete entre R$ 7,00 e R$ 20,00
+      const precoFrete = (Math.random() * (20 - 7) + 7).toFixed(2);
+      setFrete(parseFloat(precoFrete));
+
+      Swal.fire({
+        title: "Sucesso!",
+        text: `Endereço encontrado! Frete: R$ ${precoFrete}`,
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      console.error("Erro ao consultar CEP:", error);
+      Swal.fire({
+        title: "Erro!",
+        text: "Não foi possível consultar o CEP. Tente novamente.",
+        icon: "error",
+      });
+    } finally {
+      setLoadingCep(false);
+    }
+  };
+
+  const finalizarCompra = () => {
+    if (cartItems.length === 0) {
+      Swal.fire({
+        title: "Erro!",
+        text: "Seu carrinho está vazio.",
+        icon: "error",
+      });
+      return;
+    }
+
+    if (!endereco.logradouro) {
+      Swal.fire({
+        title: "Atenção!",
+        text: "Por favor, consulte um CEP válido antes de finalizar a compra.",
+        icon: "warning",
+      });
+      return;
+    }
+
+    // Navegar para a página de finalização de compra com os dados do carrinho
+    navigate("/finalizar-compra", {
+      state: {
+        endereco,
+        frete,
+      },
+    });
+  };
+
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.price * item.quantity,
     0
   );
-  const total = subtotal;
+  const total = subtotal + frete;
 
   if (!idCliente) {
     return (
@@ -204,21 +297,48 @@ function Carrinho() {
             <h3 className="text-lg font-bold mb-2">
               Consultar frete e prazo de entrega
             </h3>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-4">
               <input
                 type="text"
                 value={cep}
-                onChange={(e) => setCep(e.target.value)}
-                placeholder="CEP"
+                onChange={(e) =>
+                  setCep(e.target.value.replace(/\D/g, "").substring(0, 8))
+                }
+                placeholder="CEP (apenas números)"
                 className="border rounded px-3 py-2 w-32"
               />
-              <button className="bg-[#EBC351] text-white px-4 py-2 rounded">
-                Consultar
+              <button
+                onClick={consultarCep}
+                disabled={loadingCep}
+                className="bg-[#EBC351] text-white px-4 py-2 rounded disabled:opacity-50"
+              >
+                {loadingCep ? "Consultando..." : "Consultar"}
               </button>
-              <a href="#cep" className="text-[#EBC351] text-sm">
+              <a
+                href="https://buscacepinter.correios.com.br/app/endereco/index.php"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#EBC351] text-sm"
+              >
                 Não sei meu CEP
               </a>
             </div>
+
+            {endereco.logradouro && (
+              <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                <h4 className="font-bold mb-2">Endereço de entrega:</h4>
+                <p>{endereco.logradouro}</p>
+                <p>{endereco.bairro}</p>
+                <p>
+                  {endereco.localidade} - {endereco.uf}
+                </p>
+                {frete > 0 && (
+                  <p className="mt-2 font-bold text-green-600">
+                    Frete: R$ {frete.toFixed(2)}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <div className="w-full lg:w-1/3">
@@ -229,14 +349,17 @@ function Carrinho() {
               <span>R${subtotal ? subtotal.toFixed(2) : "0.00"}</span>
             </div>
             <div className="flex justify-between mb-2">
-              <span>Frete Grátis</span>
-              <span className="text-green-600">Grátis</span>
+              <span>Frete</span>
+              <span>{frete > 0 ? `R$${frete.toFixed(2)}` : "Grátis"}</span>
             </div>
             <div className="flex justify-between mb-2 font-bold">
               <span>Valor total</span>
               <span>R${total ? total.toFixed(2) : "0.00"}</span>
             </div>
-            <button className="bg-purple-600 text-white w-full py-2 rounded">
+            <button
+              onClick={finalizarCompra}
+              className="bg-purple-600 text-white w-full py-2 rounded"
+            >
               Finalizar
             </button>
             <Link
