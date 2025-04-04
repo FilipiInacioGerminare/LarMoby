@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Filtro from "../assets/Slider.png";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
+import Swal from "sweetalert2";
 
 function Produtos({ searchCategory = "" }) {
   const [showFilters, setShowFilters] = useState(false);
@@ -26,30 +27,29 @@ function Produtos({ searchCategory = "" }) {
 
   const addToCart = (product) => {
     if (!idCliente) {
-      alert("Faça login para adicionar produtos ao carrinho!");
+      Swal.fire({
+        title: "Atenção!",
+        text: "Faça login para adicionar produtos ao carrinho!",
+        icon: "warning",
+      });
       return;
     }
 
     try {
-      // Usar chave específica por cliente no localStorage
       const cartKey = `cartItems_${idCliente}`;
       const savedCart = localStorage.getItem(cartKey);
       const currentCart = savedCart ? JSON.parse(savedCart) : [];
 
-      // Verificar se o produto já existe no carrinho
       const existingItem = currentCart.find(
         (item) => item.id === product.id_produto
       );
 
-      // Garantir que o preço seja um número
       const preco = product.preco ? parseFloat(product.preco) : 0;
 
       if (existingItem) {
-        // Atualizar quantidade e subtotal do item existente
         existingItem.quantity += 1;
         existingItem.subtotal = existingItem.quantity * existingItem.price;
       } else {
-        // Adicionar novo item ao carrinho
         currentCart.push({
           id: product.id_produto,
           nome: product.nome,
@@ -61,12 +61,21 @@ function Produtos({ searchCategory = "" }) {
         });
       }
 
-      // Salvar carrinho atualizado no localStorage
       localStorage.setItem(cartKey, JSON.stringify(currentCart));
-      alert("Produto adicionado ao carrinho com sucesso!");
+      Swal.fire({
+        title: "Sucesso!",
+        text: "Produto adicionado ao carrinho!",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
     } catch (error) {
       console.error("Erro ao adicionar ao carrinho:", error);
-      alert("Erro ao adicionar ao carrinho.");
+      Swal.fire({
+        title: "Erro!",
+        text: "Erro ao adicionar ao carrinho.",
+        icon: "error",
+      });
     }
   };
 

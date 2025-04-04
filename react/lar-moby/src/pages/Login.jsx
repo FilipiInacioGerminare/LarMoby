@@ -3,6 +3,7 @@ import Registrar from "./Registrar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext"; // Importa o useAuth
+import Swal from "sweetalert2";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -29,10 +30,16 @@ function Login() {
       console.log("Resposta do backend:", response.data);
       const cliente = response.data;
       login(cliente); // Atualiza o estado global com o cliente
-      setLoginMessage("Login realizado com sucesso!");
+      Swal.fire({
+        title: "Bem-vindo!",
+        text: "Login realizado com sucesso!",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
       setTimeout(() => {
         navigate("/produtos");
-      }, 1000);
+      }, 1500);
     } catch (error) {
       console.error("Erro completo:", error);
       if (error.response) {
@@ -42,15 +49,31 @@ function Login() {
           error.response.status
         );
         if (error.response.status === 401) {
-          setLoginMessage("Email ou senha incorretos!");
+          Swal.fire({
+            title: "Ops!",
+            text: "Email ou senha incorretos!",
+            icon: "error",
+          });
         } else {
-          setLoginMessage(`Erro no servidor: ${error.response.status}`);
+          Swal.fire({
+            title: "Erro!",
+            text: `Erro no servidor: ${error.response.status}`,
+            icon: "error",
+          });
         }
       } else if (error.request) {
-        setLoginMessage("Não foi possível conectar ao servidor!");
+        Swal.fire({
+          title: "Erro de Conexão!",
+          text: "Não foi possível conectar ao servidor!",
+          icon: "error",
+        });
         console.error("Nenhuma resposta recebida:", error.request);
       } else {
-        setLoginMessage("Erro ao processar login!");
+        Swal.fire({
+          title: "Erro!",
+          text: "Erro ao processar login!",
+          icon: "error",
+        });
         console.error("Erro na requisição:", error.message);
       }
     }

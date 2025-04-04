@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Swal from "sweetalert2";
 
 function Carrinho() {
   const [cartItems, setCartItems] = useState([]);
@@ -27,6 +28,13 @@ function Carrinho() {
     const updatedCart = cartItems.filter((item) => item.id !== id);
     setCartItems(updatedCart);
     localStorage.setItem(cartKey, JSON.stringify(updatedCart));
+    Swal.fire({
+      title: "Sucesso!",
+      text: "Produto removido do carrinho!",
+      icon: "success",
+      timer: 1500,
+      showConfirmButton: false,
+    });
   };
 
   const updateQuantity = (id, delta) => {
@@ -50,6 +58,13 @@ function Carrinho() {
 
     setCartItems(updatedCart);
     localStorage.setItem(cartKey, JSON.stringify(updatedCart));
+    Swal.fire({
+      title: "Sucesso!",
+      text: "Quantidade atualizada!",
+      icon: "success",
+      timer: 1500,
+      showConfirmButton: false,
+    });
   };
 
   const subtotal = cartItems.reduce(

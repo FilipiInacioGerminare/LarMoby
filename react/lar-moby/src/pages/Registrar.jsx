@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 function Registrar({ setShowRegister }) {
   const [email, setEmail] = useState("");
@@ -14,24 +15,30 @@ function Registrar({ setShowRegister }) {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Validações locais
     if (!nome || !email || !password || !confirmPassword || !telefone) {
-      setRegisterMessage("Todos os campos são obrigatórios!");
+      Swal.fire({
+        title: "Atenção!",
+        text: "Todos os campos são obrigatórios!",
+        icon: "warning",
+      });
       return;
     }
     if (password !== confirmPassword) {
-      setRegisterMessage("As senhas não coincidem!");
+      Swal.fire({
+        title: "Atenção!",
+        text: "As senhas não coincidem!",
+        icon: "warning",
+      });
       return;
     }
 
-    // Dados do cliente para enviar ao backend
     const clienteData = {
       nome,
       email,
       senha: password,
       telefone,
-      data_cadastro: new Date().toISOString().split("T")[0], // Data atual no formato YYYY-MM-DD
-      data_criacao: new Date().toISOString().split("T")[0], // Data atual no formato YYYY-MM-DD
+      data_cadastro: new Date().toISOString().split("T")[0],
+      data_criacao: new Date().toISOString().split("T")[0],
       status: "ativo",
     };
 
@@ -40,15 +47,29 @@ function Registrar({ setShowRegister }) {
         "http://localhost:8080/clientes/criarcliente",
         clienteData
       );
-      setRegisterMessage("Registro realizado com sucesso!");
+      Swal.fire({
+        title: "Sucesso!",
+        text: "Registro realizado com sucesso!",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
       setTimeout(() => {
-        setShowRegister(false); // Volta para o login após sucesso
-      }, 1000);
+        setShowRegister(false);
+      }, 1500);
     } catch (error) {
       if (error.response && error.response.data === "email já cadastrado") {
-        setRegisterMessage("Email já cadastrado!");
+        Swal.fire({
+          title: "Ops!",
+          text: "Email já cadastrado!",
+          icon: "error",
+        });
       } else {
-        setRegisterMessage("Erro ao registrar. Tente novamente.");
+        Swal.fire({
+          title: "Erro!",
+          text: "Erro ao registrar. Tente novamente.",
+          icon: "error",
+        });
       }
       console.error("Erro ao registrar cliente:", error);
     }
@@ -110,7 +131,9 @@ function Registrar({ setShowRegister }) {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2">Confirmar Senha</label>
+              <label className="block text-gray-700 mb-2">
+                Confirmar Senha
+              </label>
               <input
                 type="password"
                 value={confirmPassword}
