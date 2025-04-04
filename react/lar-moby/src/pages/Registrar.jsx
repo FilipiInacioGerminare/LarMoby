@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 
@@ -9,8 +8,7 @@ function Registrar({ setShowRegister }) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [nome, setNome] = useState(""); // Adicionado campo para nome
   const [telefone, setTelefone] = useState(""); // Adicionado campo para telefone
-  const [registerMessage, setRegisterMessage] = useState("");
-  const navigate = useNavigate();
+  const [registerMessage] = useState("");
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -43,7 +41,7 @@ function Registrar({ setShowRegister }) {
     };
 
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:8080/clientes/criarcliente",
         clienteData
       );

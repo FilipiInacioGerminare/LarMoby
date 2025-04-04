@@ -8,7 +8,7 @@ import Swal from "sweetalert2";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loginMessage, setLoginMessage] = useState("");
+  const [loginMessage] = useState("");
   const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth(); // Pega a função login do contexto
