@@ -186,10 +186,10 @@ function Carrinho() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen container flex mx-auto px-4 py-6 text-center justify-center">
-        <div className="flex flex-col items-center">
+      <div className="h-full flex items-center justify-center mt-40">
+        <div className="flex flex-col items-center text-center max-w-md mx-auto px-4">
           <svg
-            className="w-12 h-12 text-gray-500 mb-4"
+            className="w-24 h-24 text-gray-500 mb-6"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -202,13 +202,13 @@ function Carrinho() {
               d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
             />
           </svg>
-          <h2 className="text-xl font-bold mb-2">Seu carrinho está vazio</h2>
-          <p className="text-gray-600 mb-4">
+          <h2 className="text-2xl font-bold mb-4">Seu carrinho está vazio</h2>
+          <p className="text-gray-600 mb-6">
             Que tal explorar nossos produtos em destaque?
           </p>
           <Link
             to="/produtos"
-            className="border border-[#EBC351] text-[#EBC351] px-4 py-2 rounded"
+            className="border-2 border-[#EBC351] text-[#EBC351] px-6 py-3 rounded-lg hover:bg-[#EBC351] hover:text-white transition-colors duration-300"
           >
             Explorar produtos
           </Link>
@@ -218,7 +218,7 @@ function Carrinho() {
   }
 
   return (
-    <div className="container min-h-screen mx-auto px-4 py-6">
+    <div className="container min-h-full mx-auto px-4 py-6">
       <h1 className="text-2xl font-bold mb-6">Meu carrinho</h1>
       <div className="flex flex-col lg:flex-row gap-6">
         <div className="flex-1">

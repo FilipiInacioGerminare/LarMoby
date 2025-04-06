@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
+import axios from "axios";
 
 function FinalizarCompra() {
   const [cartItems, setCartItems] = useState([]);
@@ -52,20 +53,46 @@ function FinalizarCompra() {
     setLoading(true);
 
     try {
-      // Aqui você pode implementar a lógica para salvar o pedido no backend
-      // Por enquanto, vamos apenas simular um sucesso
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Preparar os dados do pedido
+      const pedidoData = {
+        id_cliente: idCliente,
+        total: total,
+        status: "pendente",
+        endereco: {
+          logradouro: endereco.logradouro,
+          numero: numero,
+          complemento: complemento || "",
+          bairro: endereco.bairro,
+          cidade: endereco.localidade,
+          estado: endereco.uf,
+          cep: endereco.cep,
+        },
+        itens: cartItems.map((item) => ({
+          id_produto: item.id,
+          quantidade: item.quantity,
+          preco_unitario: item.price,
+          subtotal: item.price * item.quantity,
+        })),
+      };
 
-      // Limpar o carrinho
-      localStorage.removeItem(`cartItems_${idCliente}`);
+      // Salvar o pedido no backend
+      const response = await axios.post(
+        "http://localhost:8080/pedidos/inserir",
+        pedidoData
+      );
 
-      Swal.fire({
-        title: "Sucesso!",
-        text: "Seu pedido foi finalizado com sucesso!",
-        icon: "success",
-      }).then(() => {
-        navigate("/produtos");
-      });
+      if (response.data) {
+        // Limpar o carrinho
+        localStorage.removeItem(`cartItems_${idCliente}`);
+
+        Swal.fire({
+          title: "Sucesso!",
+          text: "Seu pedido foi finalizado com sucesso!",
+          icon: "success",
+        }).then(() => {
+          navigate("/produtos");
+        });
+      }
     } catch (error) {
       console.error("Erro ao finalizar pedido:", error);
       Swal.fire({

@@ -42,19 +42,35 @@ public class ClienteService {
     }
 
     @Transactional
-    public void atualizarCliente(int id, String nome, String email) {
+    public void atualizarCliente(int id, Cliente clienteAtualizado) {
         Cliente cliente = clienteRepository.findClienteById_cliente(id)
                 .orElseThrow(() -> new IllegalStateException("cliente com o id " + id + " não existe"));
-        if (nome != null && !nome.isEmpty() && !Objects.equals(cliente.getNome(), nome)) {
-            cliente.setNome(nome);
+        
+        if (clienteAtualizado.getNome() != null && !clienteAtualizado.getNome().isEmpty() && !Objects.equals(cliente.getNome(), clienteAtualizado.getNome())) {
+            cliente.setNome(clienteAtualizado.getNome());
         }
-        if (email != null && !email.isEmpty() && !Objects.equals(cliente.getEmail(), email)) {
-            Optional<Cliente> clienteOptional = clienteRepository.findClienteByEmail(email);
-            if (clienteOptional.isPresent()) {
+        
+        if (clienteAtualizado.getEmail() != null && !clienteAtualizado.getEmail().isEmpty() && !Objects.equals(cliente.getEmail(), clienteAtualizado.getEmail())) {
+            Optional<Cliente> clienteOptional = clienteRepository.findClienteByEmail(clienteAtualizado.getEmail());
+            if (clienteOptional.isPresent() && clienteOptional.get().getId_cliente() != id) {
                 throw new IllegalStateException("email já cadastrado");
             }
-            cliente.setEmail(email);
+            cliente.setEmail(clienteAtualizado.getEmail());
         }
+        
+        if (clienteAtualizado.getTelefone() != null && !clienteAtualizado.getTelefone().isEmpty()) {
+            cliente.setTelefone(clienteAtualizado.getTelefone());
+        }
+        
+        if (clienteAtualizado.getStatus() != null && !clienteAtualizado.getStatus().isEmpty()) {
+            cliente.setStatus(clienteAtualizado.getStatus());
+        }
+        
+        if (clienteAtualizado.getSenha() != null && !clienteAtualizado.getSenha().isEmpty()) {
+            cliente.setSenha(clienteAtualizado.getSenha());
+        }
+        
+        clienteRepository.save(cliente);
     }
 
     public Cliente autenticarCliente(String email, String senha) {

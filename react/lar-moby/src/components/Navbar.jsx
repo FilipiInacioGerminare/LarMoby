@@ -20,7 +20,7 @@ function Navbar() {
   };
 
   return (
-    <nav className="bg-[#EBC351] p-4 shadow-md text-white">
+    <nav className="bg-[#EBC351] p-4 shadow-md text-white sticky top-0 z-50">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
         <Link
           to="/home"

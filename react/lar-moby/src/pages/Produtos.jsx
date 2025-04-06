@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 function Produtos({ searchCategory = "" }) {
   const [showFilters, setShowFilters] = useState(false);
   const [sortOrder, setSortOrder] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [showDestaque, setShowDestaque] = useState(false);
   const [products, setProducts] = useState([]);
   const { cliente } = useAuth();
   const idCliente = cliente ? cliente.id_cliente : null;
@@ -34,7 +34,6 @@ function Produtos({ searchCategory = "" }) {
       });
       return;
     }
-
     try {
       const cartKey = `cartItems_${idCliente}`;
       const savedCart = localStorage.getItem(cartKey);
@@ -79,29 +78,17 @@ function Produtos({ searchCategory = "" }) {
     }
   };
 
-  const handleCategoryChange = (category) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((cat) => cat !== category)
-        : [...prev, category]
-    );
-  };
-
   let filteredProducts = [...products];
 
   if (searchCategory) {
     filteredProducts = filteredProducts.filter((product) =>
-      product.id_categoria?.nome
-        ?.toLowerCase()
-        .includes(searchCategory.toLowerCase())
+      product.nome?.toLowerCase().includes(searchCategory.toLowerCase())
     );
   }
 
-  if (selectedCategories.length > 0) {
+  if (showDestaque) {
     filteredProducts = filteredProducts.filter(
-      (product) =>
-        product.id_categoria?.nome &&
-        selectedCategories.includes(product.id_categoria.nome)
+      (product) => product.destaque === true
     );
   }
 
@@ -127,6 +114,18 @@ function Produtos({ searchCategory = "" }) {
                 Filtre por:
               </h2>
               <div className="space-y-3">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="destaque"
+                    checked={showDestaque}
+                    onChange={() => setShowDestaque(!showDestaque)}
+                    className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
+                  />
+                  <label htmlFor="destaque" className="text-sm text-gray-700">
+                    Produtos em destaque
+                  </label>
+                </div>
                 <div className="flex items-center">
                   <input
                     type="checkbox"
@@ -160,60 +159,6 @@ function Produtos({ searchCategory = "" }) {
                     Mais caros
                   </label>
                 </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="salaDeJantar"
-                    checked={selectedCategories.includes("Sala de jantar")}
-                    onChange={() => handleCategoryChange("Sala de jantar")}
-                    className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
-                  />
-                  <label
-                    htmlFor="salaDeJantar"
-                    className="text-sm text-gray-700"
-                  >
-                    Móveis para sala de jantar
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="cozinha"
-                    checked={selectedCategories.includes("Cozinha")}
-                    onChange={() => handleCategoryChange("Cozinha")}
-                    className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
-                  />
-                  <label htmlFor="cozinha" className="text-sm text-gray-700">
-                    Móveis para cozinha
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="banheiro"
-                    checked={selectedCategories.includes("Banheiro")}
-                    onChange={() => handleCategoryChange("Banheiro")}
-                    className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
-                  />
-                  <label htmlFor="banheiro" className="text-sm text-gray-700">
-                    Móveis para banheiro
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="areaExterna"
-                    checked={selectedCategories.includes("Área externa")}
-                    onChange={() => handleCategoryChange("Área externa")}
-                    className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
-                  />
-                  <label
-                    htmlFor="areaExterna"
-                    className="text-sm text-gray-700"
-                  >
-                    Móveis para área externa
-                  </label>
-                </div>
               </div>
               <div className="mt-6 flex justify-between">
                 <button
@@ -227,7 +172,7 @@ function Produtos({ searchCategory = "" }) {
                   onClick={() => {
                     setShowFilters(false);
                     setSortOrder("");
-                    setSelectedCategories([]);
+                    setShowDestaque(false);
                   }}
                 >
                   Limpar
@@ -237,12 +182,14 @@ function Produtos({ searchCategory = "" }) {
           )}
         </div>
         <h1 className="text-2xl font-bold">
-          {searchCategory ? searchCategory : "Todos os Produtos"}
+          {searchCategory
+            ? `Resultados para: "${searchCategory}"`
+            : "Todos os Produtos"}
         </h1>
       </div>
       {filteredProducts.length === 0 ? (
         <p className="text-center text-gray-600">
-          Nenhum produto encontrado para a categoria "{searchCategory}".
+          Nenhum produto encontrado para "{searchCategory}".
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

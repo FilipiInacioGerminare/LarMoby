@@ -40,10 +40,9 @@ public class ClienteController {
     @PutMapping("atualizar/{id}")
     public ResponseEntity<String> atualizarCliente(
             @PathVariable int id,
-            @RequestParam(required = false) String nome,
-            @RequestParam(required = false) String email
+            @RequestBody Cliente cliente
     ) {
-        clienteService.atualizarCliente(id, nome, email);
+        clienteService.atualizarCliente(id, cliente);
         return ResponseEntity.ok("Cliente atualizado com sucesso!");
     }
 
