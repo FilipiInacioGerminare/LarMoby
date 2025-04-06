@@ -25,11 +25,12 @@ public class Cliente {
     private Date data_cadastro;
     private Date data_criacao;
     private String status;
+    private boolean admin;
 
     // Construtores
     public Cliente(){}
 
-    public Cliente(String nome, String email, String senha, String telefone, Date data_cadastro, Date data_criacao, String status) {
+    public Cliente(String nome, String email, String senha, String telefone, Date data_cadastro, Date data_criacao, String status, boolean admin) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
@@ -37,6 +38,7 @@ public class Cliente {
         this.data_cadastro = data_cadastro;
         this.data_criacao = data_criacao;
         this.status = status;
+        this.admin = admin;
     }
 
     // Getters e Setters
@@ -104,5 +106,13 @@ public class Cliente {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 }

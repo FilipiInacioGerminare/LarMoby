@@ -33,7 +33,7 @@ public class ProdutoService {
     }
 
     @Transactional
-    public void deletarProduto(Long idProduto) {
+    public void deletarProduto(int idProduto) {
         boolean existe = produtoRepository.existsById(idProduto);
         if (!existe) {
             throw new IllegalStateException("Produto com id " + idProduto + " não existe");

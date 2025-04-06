@@ -4,7 +4,7 @@ import Produtos from "../pages/Produtos";
 
 function Procurar() {
   const location = useLocation();
-  const searchCategory = location.state?.searchTerm || ""; // Get search term from Navbar
+  const searchCategory = location.state?.searchTerm || ""; // Termo de busca para filtrar produtos por nome
 
   return (
     <div className="container mx-auto px-4 py-6">

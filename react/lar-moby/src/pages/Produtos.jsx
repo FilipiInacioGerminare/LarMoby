@@ -1,115 +1,101 @@
-import React, { useState, useContext } from "react";
-import { CartContext } from "../components/CartContext";
+import React, { useState, useEffect } from "react";
 import Filtro from "../assets/Slider.png";
-import Image from "../assets/sala_estar.png";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext";
+import Swal from "sweetalert2";
 
 function Produtos({ searchCategory = "" }) {
-  const { addToCart } = useContext(CartContext);
   const [showFilters, setShowFilters] = useState(false);
   const [sortOrder, setSortOrder] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [showDestaque, setShowDestaque] = useState(false);
+  const [products, setProducts] = useState([]);
+  const { cliente } = useAuth();
+  const idCliente = cliente ? cliente.id_cliente : null;
 
-  const products = [
-    {
-      id: 1,
-      image: Image,
-      name: "Rack para sala de madeira lisa e tratada",
-      price: 1499.9,
-      discount: "ou 3x de 359,99",
-      shipping: "opção de frete grátis disponível",
-      categoria: "Sala de estar",
-    },
-    {
-      id: 2,
-      image: Image,
-      name: "Mesa de jantar 6 lugares",
-      price: 2499.9,
-      discount: "ou 3x de 833,30",
-      shipping: "opção de frete grátis disponível",
-      categoria: "Sala de jantar",
-    },
-    {
-      id: 3,
-      image: Image,
-      name: "Armário de cozinha modular",
-      price: 1999.9,
-      discount: "ou 3x de 666,63",
-      shipping: "opção de frete grátis disponível",
-      categoria: "Cozinha",
-    },
-    {
-      id: 4,
-      image: Image,
-      name: "Bancada para banheiro",
-      price: 899.9,
-      discount: "ou 3x de 299,97",
-      shipping: "opção de frete grátis disponível",
-      categoria: "Banheiro",
-    },
-    {
-      id: 5,
-      image: Image,
-      name: "Mesa de jardim com cadeiras",
-      price: 1799.9,
-      discount: "ou 3x de 599,97",
-      shipping: "opção de frete grátis disponível",
-      categoria: "Área externa",
-    },
-    {
-      id: 6,
-      image: Image,
-      name: "Sofá para sala de estar",
-      price: 2999.9,
-      discount: "ou 3x de 999,97",
-      shipping: "opção de frete grátis disponível",
-      categoria: "Sala de estar",
-    },
-    {
-      id: 7,
-      image: Image,
-      name: "Cômoda para quarto",
-      price: 1299.9,
-      discount: "ou 3x de 433,30",
-      shipping: "opção de frete grátis disponível",
-      categoria: "Quarto",
-    },
-    {
-      id: 8,
-      image: Image,
-      name: "Prateleira para escritório",
-      price: 599.9,
-      discount: "ou 3x de 199,97",
-      shipping: "opção de frete grátis disponível",
-      categoria: "Escritório",
-    },
-  ];
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/produtos");
+        setProducts(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar produtos:", error);
+        alert("Erro ao carregar produtos. Tente novamente.");
+      }
+    };
+    fetchProducts();
+  }, []);
 
-  const handleCategoryChange = (category) => {
-    setSelectedCategories((prev) =>
-      prev.includes(category)
-        ? prev.filter((cat) => cat !== category)
-        : [...prev, category]
-    );
+  const addToCart = (product) => {
+    if (!idCliente) {
+      Swal.fire({
+        title: "Atenção!",
+        text: "Faça login para adicionar produtos ao carrinho!",
+        icon: "warning",
+      });
+      return;
+    }
+    try {
+      const cartKey = `cartItems_${idCliente}`;
+      const savedCart = localStorage.getItem(cartKey);
+      const currentCart = savedCart ? JSON.parse(savedCart) : [];
+
+      const existingItem = currentCart.find(
+        (item) => item.id === product.id_produto
+      );
+
+      const preco = product.preco ? parseFloat(product.preco) : 0;
+
+      if (existingItem) {
+        existingItem.quantity += 1;
+        existingItem.subtotal = existingItem.quantity * existingItem.price;
+      } else {
+        currentCart.push({
+          id: product.id_produto,
+          nome: product.nome,
+          descricao: product.descricao,
+          price: preco,
+          quantity: 1,
+          subtotal: preco,
+          imagem_url: product.imagem_url,
+        });
+      }
+
+      localStorage.setItem(cartKey, JSON.stringify(currentCart));
+      Swal.fire({
+        title: "Sucesso!",
+        text: "Produto adicionado ao carrinho!",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      console.error("Erro ao adicionar ao carrinho:", error);
+      Swal.fire({
+        title: "Erro!",
+        text: "Erro ao adicionar ao carrinho.",
+        icon: "error",
+      });
+    }
   };
 
-  let filteredProducts = products;
+  let filteredProducts = [...products];
 
   if (searchCategory) {
     filteredProducts = filteredProducts.filter((product) =>
-      product.categoria.toLowerCase().includes(searchCategory.toLowerCase())
+      product.nome?.toLowerCase().includes(searchCategory.toLowerCase())
     );
   }
 
-  if (selectedCategories.length > 0) {
-    filteredProducts = filteredProducts.filter((product) =>
-      selectedCategories.includes(product.categoria)
+  if (showDestaque) {
+    filteredProducts = filteredProducts.filter(
+      (product) => product.destaque === true
     );
   }
 
   if (sortOrder === "cheapest") {
-    filteredProducts = [...filteredProducts].sort((a, b) => a.price - b.price);
+    filteredProducts = [...filteredProducts].sort((a, b) => a.preco - b.preco);
   } else if (sortOrder === "mostExpensive") {
-    filteredProducts = [...filteredProducts].sort((a, b) => b.price - a.price);
+    filteredProducts = [...filteredProducts].sort((a, b) => b.preco - a.preco);
   }
 
   return (
@@ -117,19 +103,29 @@ function Produtos({ searchCategory = "" }) {
       <div className="flex items-center mb-4">
         <div className="relative">
           <button
-            onClick={() => setShowFilters(!showFilters)} // Toggle the pop-up
+            onClick={() => setShowFilters(!showFilters)}
             className="text-xl p-10"
           >
             <img src={Filtro} alt="Filtrar" />
           </button>
-
-          {/* Position the pop-up above the filter button */}
           {showFilters && (
             <div className="absolute left-0 mb-2 w-80 bg-white p-6 rounded-lg shadow-lg z-10">
               <h2 className="text-lg font-bold mb-4 text-gray-800">
                 Filtre por:
               </h2>
               <div className="space-y-3">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="destaque"
+                    checked={showDestaque}
+                    onChange={() => setShowDestaque(!showDestaque)}
+                    className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
+                  />
+                  <label htmlFor="destaque" className="text-sm text-gray-700">
+                    Produtos em destaque
+                  </label>
+                </div>
                 <div className="flex items-center">
                   <input
                     type="checkbox"
@@ -163,60 +159,6 @@ function Produtos({ searchCategory = "" }) {
                     Mais caros
                   </label>
                 </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="salaDeJantar"
-                    checked={selectedCategories.includes("Sala de jantar")}
-                    onChange={() => handleCategoryChange("Sala de jantar")}
-                    className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
-                  />
-                  <label
-                    htmlFor="salaDeJantar"
-                    className="text-sm text-gray-700"
-                  >
-                    Móveis para sala de jantar
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="cozinha"
-                    checked={selectedCategories.includes("Cozinha")}
-                    onChange={() => handleCategoryChange("Cozinha")}
-                    className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
-                  />
-                  <label htmlFor="cozinha" className="text-sm text-gray-700">
-                    Móveis para cozinha
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="banheiro"
-                    checked={selectedCategories.includes("Banheiro")}
-                    onChange={() => handleCategoryChange("Banheiro")}
-                    className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
-                  />
-                  <label htmlFor="banheiro" className="text-sm text-gray-700">
-                    Móveis para banheiro
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="areaExterna"
-                    checked={selectedCategories.includes("Área externa")}
-                    onChange={() => handleCategoryChange("Área externa")}
-                    className="mr-2 h-4 w-4 text-yellow-500 focus:ring-yellow-400 border-gray-300 rounded"
-                  />
-                  <label
-                    htmlFor="areaExterna"
-                    className="text-sm text-gray-700"
-                  >
-                    Móveis para área externa
-                  </label>
-                </div>
               </div>
               <div className="mt-6 flex justify-between">
                 <button
@@ -230,7 +172,7 @@ function Produtos({ searchCategory = "" }) {
                   onClick={() => {
                     setShowFilters(false);
                     setSortOrder("");
-                    setSelectedCategories([]);
+                    setShowDestaque(false);
                   }}
                 >
                   Limpar
@@ -239,39 +181,35 @@ function Produtos({ searchCategory = "" }) {
             </div>
           )}
         </div>
-
         <h1 className="text-2xl font-bold">
-          {searchCategory ? searchCategory : "Todos os Produtos"}
+          {searchCategory
+            ? `Resultados para: "${searchCategory}"`
+            : "Todos os Produtos"}
         </h1>
       </div>
-
       {filteredProducts.length === 0 ? (
         <p className="text-center text-gray-600">
-          Nenhum produto encontrado para a categoria "{searchCategory}".
+          Nenhum produto encontrado para "{searchCategory}".
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredProducts.map((product, index) => (
+          {filteredProducts.map((product) => (
             <div
-              key={index}
+              key={product.id_produto}
               className="bg-white rounded-lg shadow-md overflow-hidden"
             >
               <img
-                src={product.image}
-                alt={product.name}
+                src={product.imagem_url}
+                alt={product.nome}
                 className="w-full h-48 object-cover"
               />
               <div className="p-4">
-                <p className="text-sm text-gray-700 mb-2">{product.name}</p>
+                <p className="text-sm text-gray-700 mb-2">{product.nome}</p>
                 <p className="text-lg font-bold text-gray-900 mb-1">
-                  R${product.price.toFixed(2)} no pix
-                </p>
-                <p className="text-sm text-gray-600 mb-1">{product.discount}</p>
-                <p className="text-xs font-bold text-green-600">
-                  {product.shipping}
+                  R${product.preco ? product.preco.toFixed(2) : "0.00"} no pix
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
-                  Categoria: {product.categoria}
+                  Estoque: {product.qnt_estoque}
                 </p>
                 <button
                   onClick={() => addToCart(product)}

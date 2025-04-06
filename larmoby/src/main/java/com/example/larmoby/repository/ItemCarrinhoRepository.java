@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 
-public interface ItemCarrinhoRepository extends JpaRepository<ItemCarrinho, Long> {
+public interface ItemCarrinhoRepository extends JpaRepository<ItemCarrinho, Integer> {
     @Query("SELECT c FROM ItemCarrinho c WHERE c.id_carrinho = ?1")
     List<ItemCarrinho> findItemCarrinhoById_carrinho(int id_carrinho);
     @Query("SELECT c FROM ItemCarrinho c WHERE c.id_item_carrinho = ?1")
@@ -25,5 +25,5 @@ public interface ItemCarrinhoRepository extends JpaRepository<ItemCarrinho, Long
     void deleteItemCarrinhoByIdCarrinho(int idCarrinho);
 
     @Query("SELECT c FROM ItemCarrinho c WHERE c.id_carrinho = ?1 AND c.id_produto = ?2")
-    ItemCarrinho findItemCarrinhoById_carrinhoAndId_produto(int idCarrinho, int idProduto);
+    ItemCarrinho findItemCarrinhoById_carrinhoAndId_produto(int id_carrinho, int id_produto);
 }

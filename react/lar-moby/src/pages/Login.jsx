@@ -1,23 +1,81 @@
 import React, { useState } from "react";
 import Registrar from "./Registrar";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../context/AuthContext"; // Importa o useAuth
+import Swal from "sweetalert2";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loginMessage, setLoginMessage] = useState("");
+  const [loginMessage] = useState("");
   const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth(); // Pega a função login do contexto
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (email === "inacio@gmail.com" && password === "12344321!i") {
-        setLoginMessage('Login realizado com sucesso!');
-        // Redireciona para a rota raiz após 1 segundo
-        setTimeout(() => {
-          navigate('/');
-        }, 1000);    } else {
-      setLoginMessage("Email ou senha incorretos!");
+    const loginData = { email, senha: password };
+    console.log("Enviando requisição com:", JSON.stringify(loginData, null, 2));
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/clientes/login",
+        loginData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Resposta do backend:", response.data);
+      const cliente = response.data;
+      login(cliente); // Atualiza o estado global com o cliente
+      Swal.fire({
+        title: "Bem-vindo!",
+        text: "Login realizado com sucesso!",
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+      setTimeout(() => {
+        navigate("/produtos");
+      }, 1500);
+    } catch (error) {
+      console.error("Erro completo:", error);
+      if (error.response) {
+        console.log(
+          "Resposta do erro:",
+          error.response.data,
+          error.response.status
+        );
+        if (error.response.status === 401) {
+          Swal.fire({
+            title: "Ops!",
+            text: "Email ou senha incorretos!",
+            icon: "error",
+          });
+        } else {
+          Swal.fire({
+            title: "Erro!",
+            text: `Erro no servidor: ${error.response.status}`,
+            icon: "error",
+          });
+        }
+      } else if (error.request) {
+        Swal.fire({
+          title: "Erro de Conexão!",
+          text: "Não foi possível conectar ao servidor!",
+          icon: "error",
+        });
+        console.error("Nenhuma resposta recebida:", error.request);
+      } else {
+        Swal.fire({
+          title: "Erro!",
+          text: "Erro ao processar login!",
+          icon: "error",
+        });
+        console.error("Erro na requisição:", error.message);
+      }
     }
   };
 
@@ -42,11 +100,12 @@ function Login() {
                 Informe o E-mail
               </label>
               <input
-                type="text"
+                type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 placeholder="email@gmail.com"
+                required
               />
             </div>
 
@@ -58,6 +117,7 @@ function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
                 placeholder="!exemplo123"
+                required
               />
               <a
                 href="#esqueceu_senha"

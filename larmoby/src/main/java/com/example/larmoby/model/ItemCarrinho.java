@@ -7,14 +7,21 @@ import jakarta.persistence.*;
 public class ItemCarrinho {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private int id_item_carrinho;
     private int id_produto;
     private int quantidade;
     private float subtotal;
     private int id_carrinho;
-    // Construtores
+    
+    // Campos adicionais para detalhes do produto
+    @Transient
+    private String nome_produto;
+    @Transient
+    private String descricao_produto;
+    @Transient
+    private float preco_produto;
 
+    // Construtores
     public ItemCarrinho(){}
 
     public ItemCarrinho(int id_item_carrinho, int id_produto, int quantidade, float subtotal, int id_carrinho) {
@@ -25,8 +32,19 @@ public class ItemCarrinho {
         this.id_carrinho = id_carrinho;
     }
 
-    // Getters e Setters
+    public ItemCarrinho(int id_item_carrinho, int id_produto, int quantidade, float subtotal, int id_carrinho, 
+                       String nome_produto, String descricao_produto, float preco_produto) {
+        this.id_item_carrinho = id_item_carrinho;
+        this.id_produto = id_produto;
+        this.quantidade = quantidade;
+        this.subtotal = subtotal;
+        this.id_carrinho = id_carrinho;
+        this.nome_produto = nome_produto;
+        this.descricao_produto = descricao_produto;
+        this.preco_produto = preco_produto;
+    }
 
+    // Getters e Setters
 
     public int getId_carrinho() {
         return id_carrinho;
@@ -66,5 +84,30 @@ public class ItemCarrinho {
 
     public void setSubtotal(float subtotal) {
         this.subtotal = subtotal;
+    }
+
+    // Novos getters e setters
+    public String getNome_produto() {
+        return nome_produto;
+    }
+
+    public void setNome_produto(String nome_produto) {
+        this.nome_produto = nome_produto;
+    }
+
+    public String getDescricao_produto() {
+        return descricao_produto;
+    }
+
+    public void setDescricao_produto(String descricao_produto) {
+        this.descricao_produto = descricao_produto;
+    }
+
+    public float getPreco_produto() {
+        return preco_produto;
+    }
+
+    public void setPreco_produto(float preco_produto) {
+        this.preco_produto = preco_produto;
     }
 }

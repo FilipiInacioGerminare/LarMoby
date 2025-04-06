@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Integer> {
 
-public interface ItemPedidoRepository extends JpaRepository<ItemPedido, Long>  {
-
-    @Query("SELECT i FROM ItemPedido i WHERE i.id_item_pedido = ?1")
+    @Query("SELECT i FROM ItemPedido i WHERE i.id_pedido = ?1")
     List<ItemPedido> findItemPedidoById_pedido(int id_pedido);
+    
     @Transactional
     @Modifying
     @Query("DELETE FROM ItemPedido i WHERE i.id_pedido = ?1")

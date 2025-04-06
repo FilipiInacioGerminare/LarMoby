@@ -10,7 +10,7 @@ import Email from "../assets/icon_email.png";
 
 function Footer() {
   return (
-    <footer className="bg-yellow-400 text-black py-6 text-center">
+    <footer className="bg-[#EBC351] text-black py-6 text-center">
       <div className="max-w-6xl mx-auto px-4 md:px-6 flex flex-col md:flex-row justify-between items-center">
         <div className="mb-6 md:mb-0 mt-6 md:mt-0">
           <h1 className="text-3xl md:text-4xl font-bold flex items-center font-bagel">

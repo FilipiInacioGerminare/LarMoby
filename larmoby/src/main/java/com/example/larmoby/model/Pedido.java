@@ -16,20 +16,23 @@ public class Pedido {
     private LocalDate data_pedido;
     private String status;
     private float total;
+    
+    @Column(length = 500)
+    private String endereco_entrega;
 
     // Construtores
 
     public Pedido(){}
 
-    public Pedido(int id_cliente, LocalDate data_pedido, String status, float total) {
+    public Pedido(int id_cliente, LocalDate data_pedido, String status, float total, String endereco_entrega) {
         this.id_cliente = id_cliente;
         this.data_pedido = data_pedido;
         this.status = status;
         this.total = total;
+        this.endereco_entrega = endereco_entrega;
     }
 
     // Getters e Setters
-
 
     public int getId_pedido() {
         return id_pedido;
@@ -69,5 +72,13 @@ public class Pedido {
 
     public void setTotal(float total) {
         this.total = total;
+    }
+
+    public String getEndereco_entrega() {
+        return endereco_entrega;
+    }
+
+    public void setEndereco_entrega(String endereco_entrega) {
+        this.endereco_entrega = endereco_entrega;
     }
 }

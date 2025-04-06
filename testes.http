@@ -1,0 +1,132 @@
+# Testes do carrinho
+#  GET http://localhost:8080/carrinhos
+
+# POST http://localhost:8080/carrinhos/adicionarproduto?idCarrinho=1&idProduto=3
+
+# DELETE http://localhost:8080/carrinhos/removerproduto?idCarrinho=9&idProduto=1
+
+# PUT http://localhost:8080/carrinhos/atualizarquantidade?idCarrinho=1&idProduto=2&novaQuantidade=3
+
+# POST http://localhost:8080/carrinhos/limparcarrinho?idCarrinho=1
+
+# POST http://localhost:8080/carrinhos/criar/9
+
+
+
+# Testes do pedido
+
+# GET http://localhost:8080/pedidos
+
+# GET http://localhost:8080/pedidos/buscarpedido/1
+
+# POST http://localhost:8080/pedidos/criarpedido/1
+
+#POST http://localhost:8080/pedidos/cancelar/1
+
+# Teste do cliente
+
+#  GET http://localhost:8080/clientes
+
+# POST http://localhost:8080/clientes/criarcliente
+# Content-Type: application/json
+
+# {
+#   "nome": "Duda",
+#   "email": "testeeee@gmail.com",
+#   "senha": "12344321!i",
+#   "telefone": "123456789",
+#   "data_cadastro": "2025-03-30",
+#   "data_criacao": "2025-03-30",
+#   "status": "ativo"
+# }
+
+# DELETE http://localhost:8080/clientes/deletarcliente/9
+
+# PUT http://localhost:8080/clientes/atualizar/1?nome=João%20da%20Silva&email=novoemail@example.com
+
+# Teste do produto
+
+  #GET http://localhost:8080/produtos
+
+  # GET http://localhost:8080/produtos/1
+
+# POST http://localhost:8080/produtos/inserir
+# Content-Type: application/json
+
+# {
+#   "nome": "Produto Teste",
+#   "descricao": "Descrição do Produto Teste",
+#   "preco": 100.50,
+#   "imagem_url": "http://exemplo.com/imagem.jpg",
+#   "destaque": true,
+#   "qnt_estoque": 50,
+#   "id_categoria": 1
+# }
+
+# DELETE http://localhost:8080/produtos/deletar/10
+
+# PUT http://localhost:8080/produtos/atualizar
+# Content-Type: application/json
+
+# {
+#   "id_produto": 1,
+#   "nome": "Produto Teste Atualizado",
+#   "descricao": "Descrição do Produto Atualizado",
+#   "preco": 150.75,
+#   "qnt_estoque": 40,
+#   "imagem_url": "http://exemplo.com/imagem_atualizada.jpg",
+#   "destaque": false
+# }
+
+# Teste do Endereco
+
+#  GET http://localhost:8080/enderecos
+
+# POST http://localhost:8080/enderecos/inserir
+# Content-Type: application/json
+
+# {
+#     "cep": "12345667",
+#     "numero": "12",
+#     "rua": "Teste",
+#     "estado": "TS",
+#     "cidade": "TESTE",
+#     "complemento": "teste"
+# }
+
+#  PUT http://localhost:8080/enderecos/atualizar
+#  Content-Type: application/json
+
+# {
+#     "id_endereco": 7,
+#     "cep": "1",
+#     "numero": "0",
+#     "rua": "t",
+#     "estado": "t",
+#     "cidade": "t",
+#     "complemento": "t"
+# }
+
+# DELETE http://localhost:8080/enderecos/deletar/5
+
+
+# Teste da Categoria
+
+#  GET http://localhost:8080/categorias
+
+#  POST http://localhost:8080/categorias/inserir
+# Content-Type: application/json
+
+# {
+#     "nome": "Teste"
+# }
+
+#  PUT http://localhost:8080/categorias/atualizar
+#  Content-Type: application/json
+
+# {
+#     "id_categoria": 4,
+#     "nome": "atualizado"
+# }
+
+# DELETE http://localhost:8080/categorias/deletar/4

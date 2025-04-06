@@ -1,22 +1,29 @@
 import { Link, useNavigate } from "react-router-dom";
-import { FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
+import { FaSearch, FaShoppingCart, FaUser, FaUserShield } from "react-icons/fa";
 import Logo from "../assets/Sofa With Buttons.png";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const { cliente, logout } = useAuth();
 
   const handleSearch = () => {
     navigate("/busca", { state: { searchTerm } });
     setSearchTerm("");
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
-    <nav className="bg-[#EBC351] p-4 shadow-md text-white">
+    <nav className="bg-[#EBC351] p-4 shadow-md text-white sticky top-0 z-50">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
         <Link
-          to="/"
+          to="/home"
           className="text-4xl md:text-3xl flex items-center font-bagel mb-4 md:mb-0"
         >
           Lar
@@ -28,7 +35,7 @@ function Navbar() {
 
         <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
           <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-4">
-            <Link to="/" className="hover:underline">
+            <Link to="/home" className="hover:underline">
               home
             </Link>
             <Link to="/produtos" className="hover:underline">
@@ -52,16 +59,36 @@ function Navbar() {
                 onClick={handleSearch}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2"
               >
-                <FaSearch className="text-[#EBC351]  text-lg" />
+                <FaSearch className="text-[#EBC351] text-lg" />
               </button>
             </div>
 
-            <Link to="/carrinho">
-              <FaShoppingCart className="text-xl md:text-2xl" />
-            </Link>
-            <Link to="/login">
-              <FaUser className="text-xl md:text-2xl" />
-            </Link>
+            {cliente ? (
+              <>
+                <Link to="/carrinho" title="Carrinho">
+                  <FaShoppingCart className="text-xl md:text-2xl" />
+                </Link>
+                <Link to="/perfil" title="Perfil">
+                  <FaUser className="text-xl md:text-2xl" />
+                </Link>
+                {cliente.admin && (
+                  <Link to="/admin" title="Painel Administrativo">
+                    <FaUserShield className="text-xl md:text-3xl" />
+                  </Link>
+                )}
+                <button
+                  onClick={handleLogout}
+                  className="text-white hover:underline"
+                  title="Sair"
+                >
+                  Sair
+                </button>
+              </>
+            ) : (
+              <Link to="/login" title="Login">
+                <FaUser className="text-xl md:text-2xl" />
+              </Link>
+            )}
           </div>
         </div>
       </div>

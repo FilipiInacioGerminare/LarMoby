@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 
-public interface ProdutoRepository extends JpaRepository<Produto, Long> {
+public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
     @Query("SELECT p FROM Produto p JOIN Categoria c ON c.id_categoria = p.id_categoria WHERE c.nome = 'Eletrônicos'")
     List<Produto> findProdutoById_categoria(String categoria);
     Optional<Produto> findProdutoByNome(String nome);

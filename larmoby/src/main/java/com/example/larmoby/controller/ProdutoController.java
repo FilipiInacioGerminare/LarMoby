@@ -18,7 +18,7 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public List<Produto> getPedidos() {
+    public List<Produto> getProdutos() {
         return produtoService.getProdutos();
     }
 
@@ -29,7 +29,7 @@ public class ProdutoController {
     }
 
     @DeleteMapping("/deletar/{idProduto}")
-    public ResponseEntity<String> deletarProduto(@PathVariable Long idProduto) {
+    public ResponseEntity<String> deletarProduto(@PathVariable int idProduto) {
         produtoService.deletarProduto(idProduto);
         return ResponseEntity.ok("Produto deletado com sucesso!");
     }
