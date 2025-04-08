@@ -7,9 +7,13 @@ import jakarta.persistence.*;
 public class Endereco {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private int id_endereco;
+
+    @Column(name = "id_cliente")
+    private int id_cliente;
+
     private String cep;
+    private String bairro;
     private String numero;
     private String rua;
     private String estado;
@@ -17,11 +21,12 @@ public class Endereco {
     private String complemento;
 
     // Construtores
-
     public Endereco(){}
 
-    public Endereco(String cep, String numero, String rua, String estado, String cidade, String complemento) {
+    public Endereco(int id_cliente, String cep, String bairro, String numero, String rua, String estado, String cidade, String complemento) {
+        this.id_cliente = id_cliente;
         this.cep = cep;
+        this.bairro = bairro;
         this.numero = numero;
         this.rua = rua;
         this.estado = estado;
@@ -37,12 +42,28 @@ public class Endereco {
         this.id_endereco = id_endereco;
     }
 
+    public int getId_cliente() {
+        return id_cliente;
+    }
+
+    public void setId_cliente(int id_cliente) {
+        this.id_cliente = id_cliente;
+    }
+
     public String getCep() {
         return cep;
     }
 
     public void setCep(String cep) {
         this.cep = cep;
+    }
+
+    public String getBairro() {
+        return bairro;
+    }
+
+    public void setBairro(String bairro) {
+        this.bairro = bairro;
     }
 
     public String getNumero() {

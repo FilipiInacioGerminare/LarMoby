@@ -23,20 +23,18 @@ public class Cliente {
     private String senha;
     private String telefone;
     private Date data_cadastro;
-    private Date data_criacao;
     private String status;
     private boolean admin;
 
     // Construtores
     public Cliente(){}
 
-    public Cliente(String nome, String email, String senha, String telefone, Date data_cadastro, Date data_criacao, String status, boolean admin) {
+    public Cliente(String nome, String email, String senha, String telefone, Date data_cadastro, String status, boolean admin) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.telefone = telefone;
         this.data_cadastro = data_cadastro;
-        this.data_criacao = data_criacao;
         this.status = status;
         this.admin = admin;
     }
@@ -90,14 +88,6 @@ public class Cliente {
 
     public void setData_cadastro(Date data_cadastro) {
         this.data_cadastro = data_cadastro;
-    }
-
-    public Date getData_criacao() {
-        return data_criacao;
-    }
-
-    public void setData_criacao(Date data_criacao) {
-        this.data_criacao = data_criacao;
     }
 
     public String getStatus() {

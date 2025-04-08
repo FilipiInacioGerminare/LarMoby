@@ -13,21 +13,15 @@ import java.util.Optional;
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository;
-
-    private final CarrinhoRepository carrinhoRepository;
-
-    private final ItemCarrinhoRepository itemCarrinhoRepository;
-
     private final ItemPedidoRepository itemPedidoRepository;
-
     private final ProdutoRepository produtoRepository;
+    private final EnderecoRepository enderecoRepository;
 
-    public PedidoService(PedidoRepository pedidoRepository, CarrinhoRepository carrinhoRepository, ItemCarrinhoRepository itemCarrinhoRepository, ItemPedidoRepository itemPedidoRepository, ProdutoRepository produtoRepository) {
+    public PedidoService(PedidoRepository pedidoRepository, ItemPedidoRepository itemPedidoRepository, ProdutoRepository produtoRepository, EnderecoRepository enderecoRepository) {
         this.pedidoRepository = pedidoRepository;
-        this.carrinhoRepository = carrinhoRepository;
-        this.itemCarrinhoRepository = itemCarrinhoRepository;
         this.itemPedidoRepository = itemPedidoRepository;
         this.produtoRepository = produtoRepository;
+        this.enderecoRepository = enderecoRepository;
     }
 
     @Transactional
@@ -41,6 +35,21 @@ public class PedidoService {
         // Processar o endereço
         @SuppressWarnings("unchecked")
         Map<String, String> endereco = (Map<String, String>) pedidoData.get("endereco");
+        
+        // Criar novo endereço
+        Endereco novoEndereco = new Endereco();
+        novoEndereco.setId_cliente(pedido.getId_cliente());
+        novoEndereco.setCep(endereco.get("cep"));
+        novoEndereco.setBairro(endereco.get("bairro"));
+        novoEndereco.setNumero(endereco.get("numero"));
+        novoEndereco.setRua(endereco.get("logradouro"));
+        novoEndereco.setEstado(endereco.get("estado"));
+        novoEndereco.setCidade(endereco.get("cidade"));
+        novoEndereco.setComplemento(endereco.get("complemento"));
+        
+        novoEndereco = enderecoRepository.save(novoEndereco);
+        pedido.setId_endereco(novoEndereco.getId_endereco());
+        
         String enderecoCompleto = String.format("%s, %s %s, %s - %s, %s, CEP: %s",
             endereco.get("logradouro"),
             endereco.get("numero"),
@@ -83,54 +92,6 @@ public class PedidoService {
     }
 
     @Transactional
-    public void criarPedido(int idCliente) {
-        Optional<Carrinho> carrinhoOptional = carrinhoRepository.findCarrinhoById_cliente(idCliente);
-        if (carrinhoOptional.isEmpty()) {
-            throw new RuntimeException("Carrinho não encontrado para o cliente.");
-        }
-
-        Carrinho carrinho = carrinhoOptional.get();
-        List<ItemCarrinho> itensCarrinho = itemCarrinhoRepository.findItemCarrinhoById_carrinho(carrinho.getId_carrinho());
-        if (itensCarrinho.isEmpty()) {
-            throw new RuntimeException("Carrinho está vazio.");
-        }
-
-        Pedido pedido = new Pedido();
-        pedido.setId_cliente(idCliente);
-        pedido.setData_pedido(LocalDate.now());
-        pedido.setStatus("pendente");
-
-        float total = 0;
-        pedido = pedidoRepository.save(pedido);
-
-        for (ItemCarrinho item : itensCarrinho) {
-            Produto produto = produtoRepository.findProdutoById_produto(item.getId_produto());
-            if (produto.getQnt_estoque() < item.getQuantidade()) {
-                throw new RuntimeException("Estoque insuficiente para o produto: " + produto.getNome());
-            }
-
-            ItemPedido itemPedido = new ItemPedido();
-            itemPedido.setId_pedido(pedido.getId_pedido());
-            itemPedido.setId_produto(produto.getId_produto());
-            itemPedido.setQuantidade(item.getQuantidade());
-            itemPedido.setPreco_unitario(produto.getPreco());
-            itemPedido.setSubtotal(produto.getPreco() * item.getQuantidade());
-
-            itemPedidoRepository.save(itemPedido);
-
-            total += itemPedido.getSubtotal();
-
-            produto.setQnt_estoque(produto.getQnt_estoque() - item.getQuantidade());
-            produtoRepository.save(produto);
-        }
-
-        pedido.setTotal(total);
-        pedidoRepository.save(pedido);
-
-        itemCarrinhoRepository.deleteItemCarrinhoByIdCarrinho(carrinho.getId_carrinho());
-    }
-
-    @Transactional
     public void cancelarPedido(int idPedido) {
         Pedido pedido = pedidoRepository.findPedidoById_pedido(idPedido);
         List<ItemPedido> itemPedidos = itemPedidoRepository.findItemPedidoById_pedido(idPedido);
@@ -157,5 +118,8 @@ public class PedidoService {
 
     public List<ItemPedido> buscarItensPedido(int idPedido) {
         return itemPedidoRepository.findItemPedidoById_pedido(idPedido);
+    }
+
+    public void criarPedido(int id) {
     }
 }
