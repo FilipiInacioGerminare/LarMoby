@@ -12,7 +12,13 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id_pedido;
+    
+    @Column(name = "id_cliente")
     private int id_cliente;
+    
+    @Column(name = "id_endereco")
+    private int id_endereco;
+    
     private LocalDate data_pedido;
     private String status;
     private float total;
@@ -24,8 +30,9 @@ public class Pedido {
 
     public Pedido(){}
 
-    public Pedido(int id_cliente, LocalDate data_pedido, String status, float total, String endereco_entrega) {
+    public Pedido(int id_cliente, int id_endereco, LocalDate data_pedido, String status, float total, String endereco_entrega) {
         this.id_cliente = id_cliente;
+        this.id_endereco = id_endereco;
         this.data_pedido = data_pedido;
         this.status = status;
         this.total = total;
@@ -48,6 +55,14 @@ public class Pedido {
 
     public void setId_cliente(int id_cliente) {
         this.id_cliente = id_cliente;
+    }
+
+    public int getId_endereco() {
+        return id_endereco;
+    }
+
+    public void setId_endereco(int id_endereco) {
+        this.id_endereco = id_endereco;
     }
 
     public LocalDate getData_pedido() {

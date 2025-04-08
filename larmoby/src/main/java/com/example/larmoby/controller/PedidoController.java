@@ -53,12 +53,6 @@ public class PedidoController {
         return ResponseEntity.ok(pedido);
     }
 
-    @PostMapping("/criarpedido/{id}")
-    public ResponseEntity<String> criarPedido(@PathVariable int id) {
-        pedidoService.criarPedido(id);
-        return ResponseEntity.ok("Pedido criado com sucesso.");
-    }
-
     @PostMapping("/cancelar/{id}")
     public ResponseEntity<String> cancelarPedido(@PathVariable int id) {
         pedidoService.cancelarPedido(id);

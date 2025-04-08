@@ -536,7 +536,8 @@ function Admin() {
                         className={`px-2 py-1 rounded text-sm ${
                           pedido.status === "pendente"
                             ? "bg-yellow-100 text-yellow-800"
-                            : pedido.status === "concluído"
+                            : pedido.status === "enviado" ||
+                              pedido.status === "pago"
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
                         }`}

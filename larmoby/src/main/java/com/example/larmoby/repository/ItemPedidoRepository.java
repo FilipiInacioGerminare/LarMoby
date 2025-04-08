@@ -1,6 +1,5 @@
 package com.example.larmoby.repository;
 
-import com.example.larmoby.model.Carrinho;
 import com.example.larmoby.model.ItemPedido;
 import com.example.larmoby.model.Pedido;
 import org.springframework.data.jpa.repository.JpaRepository;
