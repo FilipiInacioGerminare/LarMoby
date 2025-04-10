@@ -2,6 +2,7 @@ package com.example.larmoby.service;
 
 import com.example.larmoby.model.*;
 import com.example.larmoby.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
@@ -12,13 +13,13 @@ import java.util.Optional;
 @Service
 public class PedidoService {
 
-    private final PedidoRepository pedidoRepository;
+    @Autowired
+    private PedidoRepository pedidoRepository;
     private final ItemPedidoRepository itemPedidoRepository;
     private final ProdutoRepository produtoRepository;
     private final EnderecoRepository enderecoRepository;
 
-    public PedidoService(PedidoRepository pedidoRepository, ItemPedidoRepository itemPedidoRepository, ProdutoRepository produtoRepository, EnderecoRepository enderecoRepository) {
-        this.pedidoRepository = pedidoRepository;
+    public PedidoService(ItemPedidoRepository itemPedidoRepository, ProdutoRepository produtoRepository, EnderecoRepository enderecoRepository) {
         this.itemPedidoRepository = itemPedidoRepository;
         this.produtoRepository = produtoRepository;
         this.enderecoRepository = enderecoRepository;
@@ -121,5 +122,17 @@ public class PedidoService {
     }
 
     public void criarPedido(int id) {
+    }
+
+    public Pedido atualizarPedido(int id, Pedido pedido) {
+        if (pedidoRepository.existsById(id)) {
+            pedido.setId_pedido(id);
+            return pedidoRepository.save(pedido);
+        }
+        return null;
+    }
+
+    public void deletarPedido(int id) {
+        pedidoRepository.deleteById(id);
     }
 }

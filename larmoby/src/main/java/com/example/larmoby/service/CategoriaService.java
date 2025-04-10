@@ -2,6 +2,7 @@ package com.example.larmoby.service;
 
 import com.example.larmoby.model.Categoria;
 import com.example.larmoby.repository.CategoriaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,14 +10,32 @@ import java.util.List;
 
 @Service
 public class CategoriaService {
-    private final CategoriaRepository categoriaRepository;
 
-    public CategoriaService(CategoriaRepository categoriaRepository) {
-        this.categoriaRepository = categoriaRepository;
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
+    public Categoria inserirCategoria(Categoria categoria) {
+        return categoriaRepository.save(categoria);
     }
 
-    public List<Categoria> getCategorias() {
+    public List<Categoria> listarCategorias() {
         return categoriaRepository.findAll();
+    }
+
+    public Categoria buscarCategoria(Long id) {
+        return categoriaRepository.findById(id).orElse(null);
+    }
+
+    public Categoria atualizarCategoria(Long id, Categoria categoria) {
+        if (categoriaRepository.existsById(id)) {
+            categoria.setId_categoria(id);
+            return categoriaRepository.save(categoria);
+        }
+        return null;
+    }
+
+    public void deletarCategoria(Long id) {
+        categoriaRepository.deleteById(id);
     }
 
     @Transactional
@@ -47,7 +66,5 @@ public class CategoriaService {
         } else {
             categoriaRepository.deleteById(id);
         }
-
     }
-
 }

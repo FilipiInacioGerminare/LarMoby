@@ -14,9 +14,14 @@ function Navbar() {
     setSearchTerm("");
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      // Forçar um reload da página para garantir que todos os estados sejam resetados
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
   };
 
   return (

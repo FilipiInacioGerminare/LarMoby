@@ -2,40 +2,73 @@ package com.example.larmoby.controller;
 
 import com.example.larmoby.model.Categoria;
 import com.example.larmoby.service.CategoriaService;
-import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/categorias")
+@Tag(name = "Categorias", description = "API para gerenciamento de categorias")
 public class CategoriaController {
-    private final CategoriaService categoriaService;
 
-    public CategoriaController(CategoriaService categoriaService) {
-        this.categoriaService = categoriaService;
+    @Autowired
+    private CategoriaService categoriaService;
+
+    @PostMapping("/inserir")
+    @Operation(summary = "Inserir uma nova categoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Categoria inserida com sucesso"),
+        @ApiResponse(responseCode = "400", description = "Dados inválidos")
+    })
+    public Categoria inserirCategoria(@RequestBody Categoria categoria) {
+        return categoriaService.inserirCategoria(categoria);
     }
 
     @GetMapping
-    public List<Categoria> getCategorias() {
-        return categoriaService.getCategorias();
+    @Operation(summary = "Listar todas as categorias")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de categorias retornada com sucesso")
+    })
+    public List<Categoria> listarCategorias() {
+        return categoriaService.listarCategorias();
     }
 
-    @PostMapping("/inserir")
-    public ResponseEntity<String> inserir(@RequestBody Categoria categoria) {
-        categoriaService.inserir(categoria);
-        return ResponseEntity.ok("Categoria inserida com sucesso!");
+    @GetMapping("/{id}")
+    @Operation(summary = "Buscar categoria por ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Categoria encontrada"),
+        @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
+    })
+    public Categoria buscarCategoria(@Parameter(description = "ID da categoria") @PathVariable Long id) {
+        return categoriaService.buscarCategoria(id);
     }
 
-    @PutMapping("/atualizar")
-    public ResponseEntity<String> atualizar(@RequestBody Categoria categoria) {
-        categoriaService.atualizar(categoria);
-        return ResponseEntity.ok("Categoria atualizada com sucesso!");
+    @PutMapping("/atualizar/{id}")
+    @Operation(summary = "Atualizar uma categoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Categoria atualizada com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
+    })
+    public Categoria atualizarCategoria(
+        @Parameter(description = "ID da categoria") @PathVariable Long id,
+        @RequestBody Categoria categoria
+    ) {
+        return categoriaService.atualizarCategoria(id, categoria);
     }
 
     @DeleteMapping("/deletar/{id}")
-    public ResponseEntity<String> deletar(@PathVariable Long id) {
-        categoriaService.deletar(id);
-        return ResponseEntity.ok("Categoria deletada com sucesso!");
+    @Operation(summary = "Deletar uma categoria")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Categoria deletada com sucesso"),
+        @ApiResponse(responseCode = "404", description = "Categoria não encontrada")
+    })
+    public void deletarCategoria(@Parameter(description = "ID da categoria") @PathVariable Long id) {
+        categoriaService.deletarCategoria(id);
     }
 }

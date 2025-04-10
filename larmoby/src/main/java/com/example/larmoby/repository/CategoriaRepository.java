@@ -6,11 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-@Repository
 
+@Repository
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     Categoria findCategoriaByNome(String nome);
+    
     @Query("SELECT c FROM Categoria c WHERE c.id_categoria = ?1")
-    Categoria findCategoriaById_categoria(int id);
-
+    Categoria findCategoriaById_categoria(Long id);
 }

@@ -3,15 +3,19 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [cliente, setCliente] = useState(null); 
-  const [isLoading, setIsLoading] = useState(true); 
+  const [cliente, setCliente] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Carrega o cliente do localStorage na montagem inicial
   useEffect(() => {
     const loadCliente = () => {
       try {
         const storedCliente = JSON.parse(localStorage.getItem("cliente"));
-        if (storedCliente && typeof storedCliente === "object" && storedCliente.id_cliente) {
+        if (
+          storedCliente &&
+          typeof storedCliente === "object" &&
+          storedCliente.id_cliente
+        ) {
           setCliente(storedCliente);
         }
       } catch (error) {
@@ -34,8 +38,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    setCliente(null);
-    localStorage.removeItem("cliente");
+    try {
+      setCliente(null);
+      localStorage.removeItem("cliente");
+      // Limpar qualquer outro dado relacionado à sessão
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error);
+    }
   };
 
   // Verificar autenticação com o backend
