@@ -30,9 +30,7 @@ public class Pedido {
 
     public Pedido(){}
 
-    public Pedido(int id_cliente, int id_endereco, LocalDate data_pedido, String status, float total, String endereco_entrega) {
-        this.id_cliente = id_cliente;
-        this.id_endereco = id_endereco;
+    public Pedido(int id_cliente, LocalDate data_pedido, String status, float total, String endereco_entrega){        this.id_cliente = id_cliente;
         this.data_pedido = data_pedido;
         this.status = status;
         this.total = total;
