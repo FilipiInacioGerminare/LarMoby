@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 function Admin() {
   const [activeTab, setActiveTab] = useState("produtos");
@@ -122,13 +123,29 @@ function Admin() {
 
   const toggleAdminStatus = async (idCliente) => {
     try {
-      await axios.put(
+      const response = await axios.put(
         `http://localhost:8080/clientes/toggleadmin/${idCliente}`
       );
-      const response = await axios.get("http://localhost:8080/clientes");
-      setClientes(response.data);
+      if (response.status === 200) {
+        const updatedClientes = await axios.get(
+          "http://localhost:8080/clientes"
+        );
+        setClientes(updatedClientes.data);
+        Swal.fire({
+          title: "Sucesso!",
+          text: "Status de admin atualizado com sucesso!",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      }
     } catch (error) {
       console.error("Erro ao alterar status de admin:", error);
+      Swal.fire({
+        title: "Erro!",
+        text: "Não foi possível atualizar o status de admin. Tente novamente.",
+        icon: "error",
+      });
     }
   };
 

@@ -33,7 +33,7 @@ public class ClienteService {
     }
 
     @Transactional
-    public void deletarCliente(Long idCliente) {
+    public void deletarCliente(Integer idCliente) {
         boolean existe = clienteRepository.existsById(idCliente);
         if (!existe) {
             throw new IllegalStateException("cliente com id " + idCliente + " não existe");
@@ -100,9 +100,18 @@ public class ClienteService {
 
     @Transactional
     public void toggleAdminStatus(int idCliente) {
-        Cliente cliente = clienteRepository.findClienteById_cliente(idCliente)
-                .orElseThrow(() -> new IllegalStateException("cliente com o id " + idCliente + " não existe"));
-        cliente.setAdmin(!cliente.isAdmin());
-        clienteRepository.save(cliente);
+        try {
+            logger.info("Tentando alterar status de admin para cliente ID: {}", idCliente);
+            Cliente cliente = clienteRepository.findClienteById_cliente(idCliente)
+                    .orElseThrow(() -> new IllegalStateException("cliente com o id " + idCliente + " não existe"));
+            
+            logger.info("Cliente encontrado: {}", cliente.getNome());
+            cliente.setAdmin(!cliente.isAdmin());
+            clienteRepository.save(cliente);
+            logger.info("Status de admin alterado com sucesso para: {}", cliente.isAdmin());
+        } catch (Exception e) {
+            logger.error("Erro ao alterar status de admin: {}", e.getMessage());
+            throw e;
+        }
     }
 }
