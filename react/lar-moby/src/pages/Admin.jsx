@@ -41,12 +41,14 @@ function Admin() {
             axios.get("http://localhost:8080/pedidos"),
           ]);
 
+        console.log("Dados dos pedidos:", pedidosRes.data);
         setProdutos(produtosRes.data);
         setCategorias(categoriasRes.data);
         setClientes(clientesRes.data);
-        setPedidos(pedidosRes.data);
+        setPedidos(pedidosRes.data || []);
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
+        setPedidos([]);
       }
     };
 
@@ -515,12 +517,14 @@ function Admin() {
         <div>
           <h2 className="text-xl font-bold mb-4">Histórico de Vendas</h2>
           <div className="space-y-4">
-            {pedidos.length === 0 ? (
+            {!pedidos || pedidos.length === 0 ? (
               <p className="text-center text-gray-600">
                 Nenhum pedido encontrado.
               </p>
             ) : (
               pedidos.map((pedido) => {
+                if (!pedido) return null;
+
                 const clientePedido = clientes.find(
                   (c) => c.id_cliente === pedido.id_cliente
                 );
@@ -531,7 +535,9 @@ function Admin() {
                 return (
                   <div key={pedido.id_pedido} className="border p-4 rounded">
                     <div className="flex justify-between items-center mb-2">
-                      <h3 className="font-bold">Pedido #{pedido.id_pedido}</h3>
+                      <h3 className="font-bold">
+                        Pedido #{pedido.id_pedido || "N/A"}
+                      </h3>
                       <span
                         className={`px-2 py-1 rounded text-sm ${
                           pedido.status === "pendente"
@@ -542,7 +548,7 @@ function Admin() {
                             : "bg-red-100 text-red-800"
                         }`}
                       >
-                        {pedido.status}
+                        {pedido.status || "Status não definido"}
                       </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
@@ -553,14 +559,21 @@ function Admin() {
                       <div>
                         <p className="font-semibold">Data:</p>
                         <p>
-                          {new Date(pedido.data_pedido).toLocaleDateString(
-                            "pt-BR"
-                          )}
+                          {pedido.data_pedido
+                            ? new Date(pedido.data_pedido).toLocaleDateString(
+                                "pt-BR"
+                              )
+                            : "Data não disponível"}
                         </p>
                       </div>
                       <div>
                         <p className="font-semibold">Total:</p>
-                        <p>R$ {pedido.total.toFixed(2)}</p>
+                        <p>
+                          R${" "}
+                          {pedido.total
+                            ? Number(pedido.total).toFixed(2)
+                            : "0.00"}
+                        </p>
                       </div>
                     </div>
                   </div>
