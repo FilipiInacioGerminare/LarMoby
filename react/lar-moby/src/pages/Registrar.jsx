@@ -3,11 +3,12 @@ import axios from "axios";
 import Swal from "sweetalert2";
 
 function Registrar({ setShowRegister }) {
+  // Adicionad o estado para os campos
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [nome, setNome] = useState(""); // Adicionado campo para nome
-  const [telefone, setTelefone] = useState(""); // Adicionado campo para telefone
+  const [nome, setNome] = useState("");
+  const [telefone, setTelefone] = useState(""); 
   const [registerMessage] = useState("");
 
   const handleRegister = async (e) => {

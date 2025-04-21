@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Registrar from "./Registrar";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext"; // Importa o useAuth
+import { useAuth } from "../context/AuthContext";
 import Swal from "sweetalert2";
 
 function Login() {
@@ -11,7 +11,7 @@ function Login() {
   const [loginMessage] = useState("");
   const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth(); // Pega a função login do contexto
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
